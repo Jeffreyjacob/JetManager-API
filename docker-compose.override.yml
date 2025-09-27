@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: jetManager_postgress
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: JetManager
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      target: builder
+    container_name: JetManager_backend
+    restart: unless-stopped
+    command: ["sh", "-c", "npm run db:deploy && npm run dev"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app:delegated
+      - node_modules:/app/node_modules 
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    
+
+volumes:
+  node_modules:
+  postgres_data:
