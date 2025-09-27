@@ -1,0 +1,236 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String            @id @default(cuid())
+  email        String         @unique
+  firstName    String
+  lastName     String
+  password      String
+  country       String
+  isVerified    Boolean      @default(true)
+  isActive      Boolean      @default(true)
+  phone         String?
+  emailOtp      Int?
+  emailOtpExpiresAt     DateTime?
+  passwordResetToken    String?
+  passwordResetExpiresAt   String?
+  loginAttempts         Int      @default(0)
+  accountLockedUntil        DateTime?
+  lastLogin                 DateTime?
+  memberships  Membership[]
+  organizations Organization[] @relation("OwnedOrganizations")
+  comments     Comment[]
+  activities   Activity[]     
+  attachments  Attachment[]  @relation("UploadedAttachments")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Organization {
+  id           String         @id @default(cuid())
+  name         String
+  ownerId      String         // Fixed: Changed from String to Int to match User.id
+  owner        User           @relation("OwnedOrganizations", fields: [ownerId], references: [id])
+  memberships  Membership[]
+  projects     Project[]      // Fixed: Changed from Projects to Project
+  subscription Subscription?  // Fixed: Made optional with ?
+  activities   Activity[]
+  createdAt    DateTime       @default(now()) // Fixed: typo "creeatedAt"
+  updatedAt    DateTime       @updatedAt
+}
+
+model Membership {
+  id             String       @id @default(cuid())
+  userId         String     // Fixed: Changed from String to Int to match User.id
+  organizationId String
+  role           MembershipRole
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now()) // Added missing timestamps
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([userId, organizationId])
+}
+
+model Subscription {
+  id                   String                @id @default(cuid())
+  organizationId       String                @unique
+  organization         Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade) // Added missing relation
+  subscriptionType     Plans
+  subscriptionDuration SubscriptionDuration
+  status               SubscriptionStatus
+  startDate            DateTime
+  endDate              DateTime
+  price                Float                 @default(0)
+  stripeCustomerId     String
+  stripeSubscriptionId String?
+  paymentMethodId      String?
+  cancelledAt          DateTime?
+  autoRenewal          Boolean               @default(true)
+  cancellationReason   String?
+  cancelRequested      Boolean               @default(false)
+  features             SubscriptionFeatures?
+  billingHistory       BillingHistory[]   
+  dunning              Dunning?   
+  reminderJobs         ReminderJob[]        
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+}
+
+model SubscriptionFeatures {
+  id             String       @id @default(cuid())
+  subscriptionId String       @unique
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade) // Added missing relation
+  maxWorkers     Int          @default(0)
+  maxProjects    Int          @default(0)
+  maxTasks       Int          @default(0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model BillingHistory {
+  id             String       @id @default(cuid())
+  subscriptionId String       // Fixed: Removed @unique to allow multiple billing records
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade) // Added missing relation
+  billingDate    DateTime
+  amount         Float
+  paymentMethod  String
+  transactionId  String       @unique // Added unique constraint for transaction ID
+  status         BillingStatus
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Dunning {
+  id             String       @id @default(cuid())
+  subscriptionId String       @unique
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade) // Added missing relation
+  attempts       Int          @default(0)
+  lastAttemptAt  DateTime?
+  finalFailedAt  DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model ReminderJob {
+  id             String       @id @default(cuid())
+  subscriptionId String       // Fixed: Removed @unique to allow multiple reminder jobs
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade) // Added missing relation
+  type           String
+  jobId          String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Project { // Fixed: Changed from Projects to Project (singular)
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tasks          Task[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade) // Fixed: Changed Projects to Project
+  assignedTo  String?
+  dueDate     DateTime?
+  duration    Int?         // Made optional as duration might not always be set
+  attachments Attachment[]
+  comments    Comment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String     // Fixed: Changed from String to Int to match User.id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // Added missing updatedAt
+}
+
+model Attachment {
+  id         String   @id @default(cuid())
+  fileUrl    String   
+  taskId     String
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  uploadedBy String
+  uploader   User     @relation("UploadedAttachments", fields: [uploadedBy], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt // Added missing updatedAt
+}
+
+model Activity {
+  id             String       @id @default(cuid())
+  action         String
+  userId         String       // Fixed: Changed from String to Int to match User.id
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade) // Added missing relation
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade) // Added missing relation
+  createdAt      DateTime     @default(now())
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  WORKER
+}
+
+enum Plans {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionDuration {
+  MONTHLY
+  QUARTERLY
+  HALFYEAR      // Fixed: Changed from HALFAYEAR to HALFYEAR
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  PENDING
+  PROCESSING
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum BillingStatus {
+  PAID
+  PENDING
+  FAILED
+  REFUNDED
+}
