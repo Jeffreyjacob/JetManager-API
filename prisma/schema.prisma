@@ -26,6 +26,7 @@ model User {
   phone         String?
   emailOtp      Int?
   emailOtpExpiresAt     DateTime?
+  emailisVerified       Boolean?     
   passwordResetToken    String?
   passwordResetExpiresAt   String?
   loginAttempts         Int      @default(0)
