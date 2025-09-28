@@ -5,6 +5,7 @@ import { AppError } from '../utils/appError';
 import bcrypt from 'bcryptjs';
 import { generateOtp } from '../utils/helper';
 import { EmailVerificationHTMl } from '../utils/emailTemplate/verifyEmailOtp';
+import { getEmailQueue } from '../jobs/queue/emailQueue';
 
 const config = getConfig();
 
@@ -64,5 +65,22 @@ export class AuthenticationServies {
       otp: user.emailOtp || 0,
       url: EmailUrl,
     });
+
+    try {
+      const emailQueue = getEmailQueue();
+      const job = await emailQueue.add('email', {
+        to: user.email,
+        subject: 'Email verification',
+        body: html,
+      });
+    } catch (error) {
+      console.error('Error adding job to queue:', error);
+      throw new AppError('Failed to send verification email', 500);
+    }
+
+    return {
+      message:
+        'User created, Please verify your email to finish sign up process',
+    };
   }
 }

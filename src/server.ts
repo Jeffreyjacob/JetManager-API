@@ -8,6 +8,10 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { prisma } from './config/prismaConfig';
 import { ErrorHandler } from './middlewares/errorHandler';
+import authRoutes from './routes/authRoute';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerOptions } from './config/swaggerConfig';
 
 dotenv.config();
 
@@ -28,6 +32,11 @@ async function startServer() {
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  const swaggerSpec = swaggerJsDoc(swaggerOptions);
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use(`${config.apiPrefix}/auth`, authRoutes);
 
   app.use(ErrorHandler);
 
