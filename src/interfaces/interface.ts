@@ -11,6 +11,13 @@ export interface IUserMutation {
     email: string;
     password: string;
   };
+  verifyEmail: {
+    email: string;
+    otp: number;
+  };
+  resendEmail: {
+    email: string;
+  };
 }
 
 export interface IUserQuery {}
