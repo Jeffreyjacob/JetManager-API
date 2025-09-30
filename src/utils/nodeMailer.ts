@@ -5,6 +5,7 @@ import { MailOptions } from 'nodemailer/lib/sendmail-transport';
 const config = getConfig();
 
 export const SendEmail = async (option: SendMailOptions) => {
+  console.log(config.email.auth.user, config.email.auth.password);
   const transporter = nodemailer.createTransport({
     host: config.email.host,
     service: config.email.service,

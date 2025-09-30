@@ -28,7 +28,7 @@ model User {
   emailOtpExpiresAt     DateTime?
   emailisVerified       Boolean?     
   passwordResetToken    String?
-  passwordResetExpiresAt   String?
+  passwordResetExpiresAt   DateTime?
   loginAttempts         Int      @default(0)
   accountLockedUntil        DateTime?
   lastLogin                 DateTime?
@@ -48,8 +48,8 @@ model Organization {
   ownerId      String         // Fixed: Changed from String to Int to match User.id
   owner        User           @relation("OwnedOrganizations", fields: [ownerId], references: [id])
   memberships  Membership[]
-  projects     Project[]      // Fixed: Changed from Projects to Project
-  subscription Subscription?  // Fixed: Made optional with ?
+  projects     Project[]      
+  subscription Subscription?  
   activities   Activity[]
   createdAt    DateTime       @default(now()) // Fixed: typo "creeatedAt"
   updatedAt    DateTime       @updatedAt
@@ -80,6 +80,7 @@ model Subscription {
   price                Float                 @default(0)
   stripeCustomerId     String
   stripeSubscriptionId String?
+  subscriptionCycleId  String?
   paymentMethodId      String?
   cancelledAt          DateTime?
   autoRenewal          Boolean               @default(true)
@@ -209,6 +210,21 @@ model Token {
   updatedAt    DateTime     @updatedAt  
 }
 
+model PackageRecord {
+  id   String  @id  @default(uuid())
+  organizationId   String  
+  subscriptionId   String
+  periodStart      DateTime
+  periodEnd        DateTime
+  isTrial          Boolean     @default(false)
+  subscriptionCycleId      String
+  workers          Int     @default(0)
+  projects         Int     @default(0)
+  tasks            Int     @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
 enum MembershipRole {
   OWNER
   ADMIN
@@ -216,7 +232,7 @@ enum MembershipRole {
 }
 
 enum Plans {
-  FREE
+  BASE
   PRO
   ENTERPRISE
 }
@@ -234,6 +250,7 @@ enum SubscriptionStatus {
   CANCELLED
   PENDING
   PROCESSING
+  TRIALING
 }
 
 enum TaskStatus {

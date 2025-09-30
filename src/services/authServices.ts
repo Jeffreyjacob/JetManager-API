@@ -6,9 +6,16 @@ import bcrypt from 'bcryptjs';
 import { comparedPassword, generateOtp } from '../utils/helper';
 import { EmailVerificationHTMl } from '../utils/emailTemplate/verifyEmailOtp';
 import { getEmailQueue } from '../jobs/queue/emailQueue';
-import { GenerateToken, setTokenCookies } from '../utils/token.utils';
+import {
+  ClearTokenCookies,
+  GenerateToken,
+  setTokenCookies,
+} from '../utils/token.utils';
 import { SaveRefreshToken } from '../middlewares/authMiddleware';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import crypto from 'crypto';
+import { ForgetPasswordHTML } from '../utils/emailTemplate/forgetPasswordEmail';
+import { User } from '../generated/prisma';
 
 const config = getConfig();
 
@@ -299,5 +306,160 @@ export class AuthenticationServies {
     return {
       messsage: 'Login successful!',
     };
+  }
+
+  async forgetPassword({ data }: { data: IUserMutation['forgetPassword'] }) {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: data.email,
+      },
+    });
+
+    if (!user) {
+      throw new AppError("user with this email can't be find", 404);
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        passwordResetToken: resetToken,
+        passwordResetExpiresAt: new Date(Date.now() + 30 * 60 * 1000),
+      },
+    });
+
+    const url = `${config.frontendUrls.passwordReset}?token=${updatedUser.passwordResetToken}`;
+
+    const formattedExpiry =
+      updatedUser.passwordResetExpiresAt &&
+      new Date(updatedUser.passwordResetExpiresAt).toLocaleString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+    const html = ForgetPasswordHTML({
+      firstName: updatedUser.firstName,
+      resetUrl: url,
+      expiryTime: formattedExpiry || '',
+    });
+
+    try {
+      const emailQueue = getEmailQueue();
+      await emailQueue.add('email', {
+        to: user.email,
+        subject: 'Forget Password',
+        body: html,
+      });
+    } catch (error: any) {
+      console.error('Error adding job to queue:', error);
+      throw new AppError('Failed to send verification email', 500);
+    }
+
+    return {
+      message: 'A link has been sent to your email to reset your password',
+    };
+  }
+
+  async ResetPassword({ data }: { data: IUserMutation['resetPassword'] }) {
+    const user = await prisma.user.findFirst({
+      where: {
+        passwordResetToken: data.token,
+        passwordResetExpiresAt: { gt: new Date() },
+      },
+    });
+
+    if (!user) {
+      throw new AppError('Invalid or expired token', 400);
+    }
+
+    const hashPassword = await bcrypt.hash(data.password, 10);
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashPassword,
+        passwordResetExpiresAt: null,
+        passwordResetToken: null,
+      },
+    });
+
+    if (!updatedUser) {
+      throw new AppError('Unable to update password', 400);
+    }
+
+    return {
+      message: 'Your password has been reset',
+    };
+  }
+
+  async LogOut({ req, res }: { req: Request; res: Response }) {
+    const user = await prisma.user.update({
+      where: {
+        id: req.user.id,
+      },
+      data: {
+        isActive: false,
+      },
+    });
+
+    if (!user) {
+      throw new AppError('Unable to log out at the moment ', 400);
+    }
+
+    const refresh = req.cookies.refreshToken;
+
+    if (refresh) {
+      await prisma.token.updateMany({
+        where: {
+          userId: user.id,
+          token: refresh,
+        },
+        data: {
+          isRevoked: true,
+        },
+      });
+    }
+
+    ClearTokenCookies(res);
+
+    return {
+      message: 'User has been logged out',
+    };
+  }
+
+  async authUser({ userId }: { userId: User['id'] }) {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        country: true,
+        phone: true,
+        organizations: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        activities: {
+          select: {
+            id: true,
+            action: true,
+          },
+        },
+      },
+    });
+
+    return user;
   }
 }

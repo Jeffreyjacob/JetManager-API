@@ -1,3 +1,5 @@
+import { SubscriptionDuration, Plans } from '../generated/prisma';
+
 export interface IUserMutation {
   register: {
     firstName: string;
@@ -18,6 +20,19 @@ export interface IUserMutation {
   resendEmail: {
     email: string;
   };
+  forgetPassword: {
+    email: string;
+  };
+  resetPassword: {
+    token: string;
+    password: string;
+  };
 }
 
-export interface IUserQuery {}
+export interface IOrganizationMutation {
+  create: {
+    name: string;
+    subscriptionType: Plans;
+    subscriptionDuration: SubscriptionDuration;
+  };
+}

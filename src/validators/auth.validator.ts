@@ -20,3 +20,56 @@ export const registerValidators = async (
 
   return validators.validateAsync(reBody, { abortEarly: false });
 };
+
+export const verifyEmailValidators = async (
+  reqBody: IUserMutation['verifyEmail']
+): Promise<IUserMutation['verifyEmail']> => {
+  const validators: ObjectSchema<IUserMutation['verifyEmail']> = Joi.object({
+    email: Joi.string().lowercase().required(),
+    otp: Joi.number().required(),
+  });
+
+  return validators.validateAsync(reqBody, { abortEarly: false });
+};
+
+export const loginValidators = async (
+  reqBody: IUserMutation['login']
+): Promise<IUserMutation['login']> => {
+  const validators: ObjectSchema<IUserMutation['login']> = Joi.object({
+    email: Joi.string().lowercase().required(),
+    password: Joi.string().min(6).required(),
+  });
+
+  return validators.validateAsync(reqBody, { abortEarly: false });
+};
+
+export const resendEmailOtpValidators = async (
+  reqBody: IUserMutation['resendEmail']
+) => {
+  const validators: ObjectSchema<IUserMutation['resendEmail']> = Joi.object({
+    email: Joi.string().lowercase().required(),
+  });
+
+  return validators.validateAsync(reqBody, { abortEarly: false });
+};
+
+export const forgetPasswordValidators = async (
+  reqBody: IUserMutation['forgetPassword']
+): Promise<IUserMutation['forgetPassword']> => {
+  const validators: ObjectSchema<IUserMutation['forgetPassword']> = Joi.object({
+    email: Joi.string().required(),
+  });
+
+  return validators.validateAsync(reqBody, { abortEarly: false });
+};
+
+export const resetPasswordValidators = async (
+  reqBody: IUserMutation['resetPassword']
+): Promise<IUserMutation['resetPassword']> => {
+  const validators: ObjectSchema<IUserMutation['resetPassword']> = Joi.object({
+    token: Joi.string().required(),
+    password: Joi.string().min(6).required(),
+  });
+
+  return validators.validateAsync(reqBody, { abortEarly: false });
+};

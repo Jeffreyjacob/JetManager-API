@@ -5,6 +5,7 @@ export interface AppConfig {
   frontendUrls: {
     baseUrl: string;
     verifiyEmail: string;
+    passwordReset: string;
   };
   tokens: {
     accessToken: {
@@ -53,6 +54,10 @@ export interface AppConfig {
     };
     concurrency: number;
   };
+  stripe: {
+    stripe_secret_key: string;
+    stripe_webhook_secret: string;
+  };
 }
 
 export const getConfig = (): AppConfig => ({
@@ -62,6 +67,7 @@ export const getConfig = (): AppConfig => ({
   frontendUrls: {
     baseUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
     verifiyEmail: `${process.env.FRONTEND_URL}/verifyEmail`,
+    passwordReset: `${process.env.FRONTEND_URL}/resetPassword`,
   },
   tokens: {
     accessToken: {
@@ -112,5 +118,9 @@ export const getConfig = (): AppConfig => ({
       },
     },
     concurrency: parseInt(process.env.BULLMQ_CONCURRENCY || '10', 10),
+  },
+  stripe: {
+    stripe_secret_key: process.env.STRIPE_SECRET_KEY!,
+    stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET!,
   },
 });
