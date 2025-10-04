@@ -12,6 +12,7 @@ import authRoutes from './routes/authRoute';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './config/swaggerConfig';
+import { handleStripeWebhook } from './webhooks/webhook';
 
 dotenv.config();
 
@@ -26,6 +27,27 @@ async function startServer() {
     })
   );
 
+  const corsOptions = {
+    credentials: config.security.cors.credentials,
+    origin: config.security.cors.origin,
+    methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
+    preflightContinue: false,
+    maxAge: 86400,
+    allowedHeaders: [
+      'Content-Type',
+      'Accept',
+      'Accept-Encoding',
+      'Accept-Language',
+    ],
+  };
+
+  app.post(
+    `${config.apiPrefix}/webhook/stripe`,
+    express.raw({ type: 'application/json' }),
+    handleStripeWebhook
+  );
+
+  app.use(cors(corsOptions));
   app.use(helmet());
   app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
   app.use(morgan('common'));

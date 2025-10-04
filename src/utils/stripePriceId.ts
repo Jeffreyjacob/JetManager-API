@@ -1,3 +1,5 @@
+import { SubscriptionStatus } from '../generated/prisma';
+
 export const STRIPE_PRICE_IDS = {
   BASE: {
     MONTHLY: 'price_1SCp6Q05AUDEDgY6ANRfYEi3',
@@ -17,4 +19,21 @@ export const STRIPE_PRICE_IDS = {
     HALFYEAR: 'price_1SCpIx05AUDEDgY63wDJ86Pu',
     YEARLY: 'price_1SCpJb05AUDEDgY6MP1FKI41',
   },
+};
+
+export const mapStripeStatusToInternal = (
+  stripeStatus: string
+): SubscriptionStatus => {
+  switch (stripeStatus) {
+    case 'active':
+      return SubscriptionStatus.ACTIVE;
+    case 'past_due':
+      return SubscriptionStatus.PAST_DUE;
+    case 'canceled':
+      return SubscriptionStatus.CANCELLED;
+    case 'trialing':
+      return SubscriptionStatus.TRIALING;
+    default:
+      return SubscriptionStatus.PAST_DUE;
+  }
 };
