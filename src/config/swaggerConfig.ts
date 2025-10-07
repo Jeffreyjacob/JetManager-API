@@ -1,3 +1,9 @@
+import {
+  SubscriptionDuration,
+  Plans,
+  MembershipRole,
+} from '../generated/prisma';
+
 export const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
@@ -155,7 +161,7 @@ export const swaggerDefinition = {
       ResetPasswordRequest: {
         type: 'object',
         required: ['token', 'password'],
-        properites: {
+        properties: {
           token: {
             type: 'string',
             example: 'err33q3kk343433355',
@@ -202,6 +208,159 @@ export const swaggerDefinition = {
               id: { type: 'string', example: 'act-123e4567' },
               action: { type: 'string', example: 'LOGIN' },
             },
+          },
+        },
+      },
+      CreateOrganizationRequest: {
+        type: 'object',
+        required: ['name', 'subscriptionType', 'subscriptionDuration'],
+        properties: {
+          name: {
+            type: 'string',
+            example: 'Jet manager',
+          },
+          subscriptionType: {
+            type: 'string',
+            enum: Object.keys(Plans),
+            example: 'BASIC, ENTERPRISE, PRO',
+          },
+          subscriptionDuration: {
+            type: 'string',
+            enum: Object.keys(SubscriptionDuration),
+            example: 'MONTHLY, QUARTERLY, HALFYEAR, YEARLY',
+          },
+        },
+      },
+      CreateOrganizationResponse: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', example: true },
+          message: {
+            type: 'string',
+            example: 'Your organization has been created',
+          },
+          url: {
+            type: 'string',
+            format: 'uri',
+            example: 'https://stripe/url',
+          },
+        },
+      },
+      SendOrganizationInviteRequest: {
+        type: 'object',
+        required: ['email', 'role', 'organizationId'],
+        properties: {
+          email: {
+            type: 'string',
+            example: 'test@example.com',
+          },
+          role: {
+            type: 'string',
+            enum: Object.keys(MembershipRole),
+            example: 'OWNER, ADMIN , WORKER',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationId',
+          },
+        },
+      },
+      SendOrganizationInviteResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Invite sent successfully!',
+          },
+        },
+      },
+      AcceptOrganizationInviteRequest: {
+        type: 'object',
+        required: ['token', 'organizationId'],
+        properties: {
+          token: {
+            type: 'string',
+            example: '3jjj334343qe',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'e55c7aa1-982c-4956-9944-3b908070c00e',
+          },
+        },
+      },
+      AcceptOrganizationInvaiteResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'You has been added to organization!',
+          },
+        },
+      },
+      RemoveMemberFromOrganizationRequest: {
+        type: 'object',
+        required: ['memberId', 'organizationId'],
+        properties: {
+          memberId: {
+            type: 'string',
+            example: 'memberId',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationid',
+          },
+        },
+      },
+      RemoveMemberFromOrganizationResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Member has been remove from organization',
+          },
+        },
+      },
+      updateMemberOrganizationRoleRequest: {
+        type: 'object',
+        required: ['memberId', 'role', 'organizationId'],
+        properties: {
+          memberId: {
+            type: 'string',
+            example: 'memberId',
+          },
+          role: {
+            type: 'string',
+            enum: Object.keys(MembershipRole),
+            example: 'OWNER, ADMIN, WORKER',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationid',
+          },
+        },
+      },
+      updateMemberOrganizationRoleResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Member role has been update successfully!',
           },
         },
       },

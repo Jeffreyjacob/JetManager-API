@@ -2,6 +2,7 @@ export interface AppConfig {
   env: string;
   port: number | string;
   apiPrefix: string;
+  backendUrl: string;
   frontendUrls: {
     baseUrl: string;
     verifiyEmail: string;
@@ -64,6 +65,7 @@ export const getConfig = (): AppConfig => ({
   env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 8000,
   apiPrefix: process.env.API_PREFIX || '/api/v1',
+  backendUrl: process.env.BACKEND_URL!,
   frontendUrls: {
     baseUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
     verifiyEmail: `${process.env.FRONTEND_URL}/verifyEmail`,

@@ -13,6 +13,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './config/swaggerConfig';
 import { handleStripeWebhook } from './webhooks/webhook';
+import organizationRoutes from './routes/organizationRoute';
 
 dotenv.config();
 
@@ -42,12 +43,12 @@ async function startServer() {
   };
 
   app.post(
-    `${config.apiPrefix}/webhook/stripe`,
+    '/webhook/stripe',
     express.raw({ type: 'application/json' }),
     handleStripeWebhook
   );
 
-  app.use(cors(corsOptions));
+  // app.use(cors(corsOptions));
   app.use(helmet());
   app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
   app.use(morgan('common'));
@@ -59,6 +60,7 @@ async function startServer() {
 
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.use(`${config.apiPrefix}/auth`, authRoutes);
+  app.use(`${config.apiPrefix}/organization`, organizationRoutes);
 
   app.use(ErrorHandler);
 

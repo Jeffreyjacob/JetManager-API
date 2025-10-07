@@ -1,4 +1,11 @@
-import { SubscriptionDuration, Plans } from '../generated/prisma';
+import {
+  SubscriptionDuration,
+  Plans,
+  Organization,
+  User,
+  Membership,
+  MembershipRole,
+} from '../generated/prisma';
 
 export interface IUserMutation {
   register: {
@@ -34,5 +41,31 @@ export interface IOrganizationMutation {
     name: string;
     subscriptionType: Plans;
     subscriptionDuration: SubscriptionDuration;
+  };
+  sendOrganizationalInvite: {
+    email: string;
+    role: MembershipRole;
+    organizationId: Organization['id'];
+  };
+  acceptOrganizationInvite: {
+    token: string;
+    organizationId: Organization['id'];
+  };
+  removeMemberFromOrganization: {
+    memberId: User['id'];
+    organizationId: Organization['id'];
+  };
+  updateMemberOrganizationRole: {
+    memberId: User['id'];
+    role: MembershipRole;
+    organizationId: Organization['id'];
+  };
+}
+
+export interface IOrganizationQuery {
+  getAllOrganization: {
+    search: string;
+    page: number;
+    limit: number;
   };
 }

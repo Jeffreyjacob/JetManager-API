@@ -204,6 +204,13 @@ async function handleInVoicePaid(invoice: Stripe.Invoice) {
       subscription: stripeSub,
     } = await getStripePeriodDates(stripeSubId);
 
+    if (stripeSub.status === 'trialing') {
+      console.log(
+        'Invoice paid, but subscription is still in trial — skipping activation.'
+      );
+      return;
+    }
+
     const organization = await prisma.organization.findUnique({
       where: {
         id: subscription.organizationId,
@@ -825,6 +832,8 @@ async function handleSubscriptionUpdate(stripeSub: Stripe.Subscription) {
 
 export const handleStripeWebhook = async (req: Request, res: Response) => {
   let event: Stripe.Event;
+
+  console.log(config.stripe.stripe_webhook_secret);
 
   try {
     const sig = req.headers['stripe-signature'] as string;

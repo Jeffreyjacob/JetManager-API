@@ -2,22 +2,22 @@ import { SubscriptionStatus } from '../generated/prisma';
 
 export const STRIPE_PRICE_IDS = {
   BASE: {
-    MONTHLY: 'price_1SCp6Q05AUDEDgY6ANRfYEi3',
-    QUARTERLY: 'price_1SCp8w05AUDEDgY6WGB6yy5E',
-    HALFYEAR: 'price_1SCpC205AUDEDgY64Kn00pRL',
-    YEARLY: 'price_1SCpDF05AUDEDgY6T5ta76Su',
+    MONTHLY: 'price_1SEmSa05AUDEDgY6wkvwSVsX',
+    QUARTERLY: 'price_1SEmTH05AUDEDgY6dzBqZZk3',
+    HALFYEAR: 'price_1SEmTo05AUDEDgY6sH8LUEOY',
+    YEARLY: 'price_1SEmUO05AUDEDgY6TiucbNRo',
   },
   PRO: {
-    MONTHLY: 'price_1SCpEH05AUDEDgY666fWTTbs',
-    QUARTERLY: 'price_1SCpEn05AUDEDgY6b4jdChSx',
-    HALFYEAR: 'price_1SCpFO05AUDEDgY6ZBOXIauf',
-    YEARLY: 'price_1SCpGH05AUDEDgY6j8VWosGe',
+    MONTHLY: 'price_1SEmVC05AUDEDgY6xIRiY1M1',
+    QUARTERLY: 'price_1SEmWp05AUDEDgY6apP6VY39',
+    HALFYEAR: 'price_1SEmXZ05AUDEDgY69XM7EHoj',
+    YEARLY: 'price_1SEmYu05AUDEDgY6NGcX3Md3',
   },
   ENTERPRISE: {
-    MONTHLY: 'price_1SCpH805AUDEDgY63xEkySgs',
-    QUARTERLY: 'price_1SCpHn05AUDEDgY6VbA1qKwe',
-    HALFYEAR: 'price_1SCpIx05AUDEDgY63wDJ86Pu',
-    YEARLY: 'price_1SCpJb05AUDEDgY6MP1FKI41',
+    MONTHLY: 'price_1SEmZM05AUDEDgY64cFquGZQ',
+    QUARTERLY: 'price_1SEmaD05AUDEDgY6DbsyaBxu',
+    HALFYEAR: 'price_1SEmay05AUDEDgY67WDQVzqW',
+    YEARLY: 'price_1SEmbn05AUDEDgY6fS6I4FT7',
   },
 };
 
