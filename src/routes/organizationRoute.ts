@@ -164,6 +164,141 @@ organizationRoutes
   .route('/member/role/update')
   .put(Protect, OrganizationController.updateMemberOrganizationRole);
 
+/**
+ * @openapi
+ * /api/v1/organization:
+ *   get:
+ *     summary: Get all user organizations (Both Owner or Worker)
+ *     description: Retrieve members of a specific organization, with optional filters such as member name, page, and limit.
+ *     tags: [Organization]
+ *     security:
+ *       - AccessToken: []
+ *     parameters:
+ *       - in: query
+ *         search: search
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Filter organization by name(case-insensitive)
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of results per page
+ *     responses:
+ *       200:
+ *         description: Organizations fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GetAllUserOrganizationResponse'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+organizationRoutes
+  .route('/')
+  .get(Protect, OrganizationController.getAllUserOrganization);
+
+/**
+ * @openapi
+ * /api/v1/organization/{orgId}:
+ *   get:
+ *     summary: Get organization by ID
+ *     tags: [Organization]
+ *     security:
+ *       - AccessToken: []
+ *     parameters:
+ *       - in: path
+ *         name: orgId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the organization
+ *     responses:
+ *       200:
+ *         description: Organization retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GetOrganizationByIdResponse'
+ *       404:
+ *         description: Organization not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+organizationRoutes
+  .route('/:orgId')
+  .get(Protect, OrganizationController.getOrganizationById);
+
+/**
+ * @openapi
+ * /api/v1/organization/{orgId}/member:
+ *   get:
+ *     summary: Get all members of an organization
+ *     description: Retrieve members of a specific organization, with optional filters such as member name, page, and limit.
+ *     tags: [Organization]
+ *     security:
+ *       - AccessToken: []
+ *     parameters:
+ *       - in: path
+ *         name: orgId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the organization
+ *       - in: query
+ *         name: name
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Filter members by user first name (case-insensitive)
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of results per page
+ *     responses:
+ *       200:
+ *         description: Members fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GetOrganizationMemberResponse'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+organizationRoutes
+  .route('/:orgId/member')
+  .get(Protect, OrganizationController.getOrganizationMember);
+
 organizationRoutes
   .route('/:id/billing/success')
   .get(async (req: Request, res: Response) => {

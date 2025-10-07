@@ -1,5 +1,8 @@
 import Joi, { ObjectSchema } from 'joi';
-import { IOrganizationMutation } from '../interfaces/interface';
+import {
+  IOrganizationMutation,
+  IOrganizationQuery,
+} from '../interfaces/interface';
 import {
   SubscriptionDuration,
   Plans,
@@ -78,4 +81,30 @@ export const updateMemberOrganizationRoleValidators = async (
   });
 
   return validators.validateAsync(reqBody, { abortEarly: false });
+};
+
+export const getOrganizationMemberValidator = async (
+  reqBody: IOrganizationQuery['getOrganizationMember']
+): Promise<IOrganizationQuery['getOrganizationMember']> => {
+  const validators: ObjectSchema<IOrganizationQuery['getOrganizationMember']> =
+    Joi.object({
+      name: Joi.string().optional(),
+      page: Joi.number().min(1).optional(),
+      limit: Joi.number().min(1).optional(),
+    });
+
+  return validators.validateAsync(reqBody, { abortEarly: false });
+};
+
+export const getAllOrganizationValidator = async (
+  reqBody: IOrganizationQuery['getAllOrganization']
+): Promise<IOrganizationQuery['getAllOrganization']> => {
+  const validator: ObjectSchema<IOrganizationQuery['getAllOrganization']> =
+    Joi.object({
+      search: Joi.string().optional(),
+      page: Joi.number().min(1).optional(),
+      limit: Joi.number().min(1).optional(),
+    });
+
+  return validator.validateAsync(reqBody, { abortEarly: false });
 };

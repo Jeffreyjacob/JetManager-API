@@ -4,6 +4,8 @@ import { AsyncHandler } from '../utils/asyncHandler';
 import {
   acceptOrganizationInviteValidator,
   createOrganizationValidator,
+  getAllOrganizationValidator,
+  getOrganizationMemberValidator,
   removeMemberFromOrganizationValidator,
   sendOrganizationInviteValidator,
   updateMemberOrganizationRoleValidators,
@@ -130,6 +132,82 @@ export class OrganizationController {
             data: validatedBody,
           }
         );
+
+      return res.status(200).json({
+        success: true,
+        ...result,
+      });
+    }
+  );
+
+  static getOrganizationMember = AsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const organizationId = req.params.orgId;
+
+      const name = req.query.name as string;
+      const page = req.query.page as string;
+      const limit = req.query.limit as string;
+
+      const query = {
+        ...(name && { name }),
+        ...(page && { page: parseInt(page) }),
+        ...(limit && { limit: parseInt(limit) }),
+      };
+
+      const validatedBody = await getOrganizationMemberValidator(query);
+
+      const result =
+        await OrganizationController.organizationServices.getOrganizationMembers(
+          {
+            organizationId: organizationId,
+            data: validatedBody,
+            userId: req.user.id,
+          }
+        );
+
+      return res.status(200).json({
+        success: true,
+        ...result,
+      });
+    }
+  );
+
+  static getOrganizationById = AsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const organizationId = req.params.orgId;
+
+      const result =
+        await OrganizationController.organizationServices.getOrganizationbyId({
+          organizationId: organizationId as Organization['id'],
+          userId: req.user.id,
+        });
+
+      return res.status(200).json({
+        success: true,
+        ...result,
+      });
+    }
+  );
+
+  static getAllUserOrganization = AsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const search = req.query.search as string;
+      const page = req.query.page as string;
+      const limit = req.query.limit as string;
+
+      const query = {
+        ...(search && { search }),
+        ...(page && { page: parseInt(page) }),
+        ...(limit && { limit: parseInt(limit) }),
+      };
+
+      const validatedBody = await getAllOrganizationValidator(query);
+
+      const result =
+        await OrganizationController.organizationServices.getAllOrganization({
+          data: validatedBody,
+          userId: req.user.id,
+        });
 
       return res.status(200).json({
         success: true,

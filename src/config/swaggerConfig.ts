@@ -364,6 +364,69 @@ export const swaggerDefinition = {
           },
         },
       },
+      GetOrganizationMemberResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'array',
+            example: "[{id:'organizationId',name:'organizationName'}]",
+          },
+          currentPage: {
+            type: 'integer',
+            example: 1,
+          },
+          totalCount: {
+            type: 'integer',
+            example: 20,
+          },
+          totalPages: {
+            type: 'integer',
+            example: 3,
+          },
+        },
+      },
+      GetOrganizationByIdResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'array',
+            example: "[{id:'organizationId',name:'organizationName'}]",
+          },
+        },
+      },
+      GetAllUserOrganizationResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'array',
+            example: "[{id:'organizationId',name:'organizationName'}]",
+          },
+          currentPage: {
+            type: 'integer',
+            example: 1,
+          },
+          totalCount: {
+            type: 'integer',
+            example: 20,
+          },
+          totalPages: {
+            type: 'integer',
+            example: 3,
+          },
+        },
+      },
       ErrorResponse: {
         type: 'object',
         properties: {

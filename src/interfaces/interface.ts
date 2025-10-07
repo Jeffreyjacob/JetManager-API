@@ -60,12 +60,20 @@ export interface IOrganizationMutation {
     role: MembershipRole;
     organizationId: Organization['id'];
   };
+  deleteOrganization: {
+    organizationId: Organization['id'];
+  };
 }
 
 export interface IOrganizationQuery {
   getAllOrganization: {
-    search: string;
-    page: number;
-    limit: number;
+    search?: string;
+    page?: number;
+    limit?: number;
+  };
+  getOrganizationMember: {
+    name?: string;
+    page?: number;
+    limit?: number;
   };
 }

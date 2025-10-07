@@ -128,25 +128,31 @@ export class OrganizationServices {
     const take = data.limit || 10;
     const skip = (page - 1) * 100;
 
-    const organizationName = data.search
-      ? {
+    const where = {
+      userId: userId,
+      ...(data.search && {
+        organization: {
           name: {
             contains: data.search,
-            mode: Prisma.QueryMode.default,
+            mode: Prisma.QueryMode.insensitive,
           },
-        }
-      : {};
-
-    const where = {
-      ownerId: userId,
-      ...organizationName,
+        },
+      }),
     };
 
-    const totalCount = await prisma.organization.count({ where });
+    const totalCount = await prisma.membership.count({ where });
     const totalPage = Math.ceil(totalCount / take);
 
-    const organizations = await prisma.organization.findMany({
+    const organizations = await prisma.membership.findMany({
       where,
+      include: {
+        organization: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
       skip,
       take,
       orderBy: { createdAt: 'desc' },
@@ -167,21 +173,49 @@ export class OrganizationServices {
     userId: User['id'];
     organizationId: Organization['id'];
   }) {
+    const memeber = await prisma.membership.findUnique({
+      where: {
+        userId_organizationId: {
+          userId,
+          organizationId,
+        },
+      },
+    });
+
+    if (!memeber) {
+      throw new AppError(
+        "You can't view organization details that you don't belong too",
+        400
+      );
+    }
+
     const organization = await prisma.organization.findFirst({
       where: {
         id: organizationId,
-        ownerId: userId,
       },
       include: {
-        subscription: true,
         projects: true,
-        memberships: true,
+        memberships: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
 
     if (!organization) {
       throw new AppError('Unable to find organization', 404);
     }
+
+    return {
+      data: organization,
+    };
   }
 
   async sendOrganizationInvite({
@@ -567,6 +601,98 @@ export class OrganizationServices {
 
     return {
       message: 'Member role has been updated',
+    };
+  }
+
+  async getOrganizationMembers({
+    data,
+    userId,
+    organizationId,
+  }: {
+    userId: User['id'];
+    data: IOrganizationQuery['getOrganizationMember'];
+    organizationId: Organization['id'];
+  }) {
+    const organization = await prisma.organization.findFirst({
+      where: {
+        id: organizationId,
+      },
+    });
+
+    if (!organization) {
+      throw new AppError('Unable to find organization', 404);
+    }
+
+    const member = await prisma.membership.findUnique({
+      where: {
+        userId_organizationId: {
+          userId,
+          organizationId,
+        },
+      },
+    });
+
+    if (!member) {
+      throw new AppError(
+        "You can't get the list of members for an organization, you don't belong too",
+        400
+      );
+    }
+    console.log(data);
+
+    const where = {
+      organizationId,
+      ...(data.name && {
+        user: {
+          OR: [
+            {
+              firstName: {
+                contains: data.name,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            },
+            {
+              lastName: {
+                contains: data.name,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            },
+          ],
+        },
+      }),
+    };
+
+    const page = data.page || 1;
+    const take = data.limit || 10;
+    const skip = (page - 1) * take;
+
+    const totalCount = await prisma.membership.count({
+      where,
+    });
+
+    const totalPages = Math.ceil(totalCount / take);
+
+    const memberList = await prisma.membership.findMany({
+      where,
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return {
+      data: memberList,
+      currentPage: page,
+      totalCount,
+      totalPages,
     };
   }
 }
