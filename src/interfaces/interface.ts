@@ -77,3 +77,22 @@ export interface IOrganizationQuery {
     limit?: number;
   };
 }
+
+export interface IProjectMutation {
+  create: {
+    name: string;
+    description: string;
+    organizationId: Organization['id'];
+  };
+  update: {
+    name?: string;
+    description?: string;
+    organizationId: Organization['id'];
+  };
+}
+
+export interface IProjectQuery {
+  getProjectByOrganization: {
+    name?: string;
+  };
+}
