@@ -8,6 +8,12 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { prisma } from './config/prismaConfig';
 import { ErrorHandler } from './middlewares/errorHandler';
+import authRoutes from './routes/authRoute';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerOptions } from './config/swaggerConfig';
+import { handleStripeWebhook } from './webhooks/webhook';
+import organizationRoutes from './routes/organizationRoute';
 
 dotenv.config();
 
@@ -22,12 +28,39 @@ async function startServer() {
     })
   );
 
+  const corsOptions = {
+    credentials: config.security.cors.credentials,
+    origin: config.security.cors.origin,
+    methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
+    preflightContinue: false,
+    maxAge: 86400,
+    allowedHeaders: [
+      'Content-Type',
+      'Accept',
+      'Accept-Encoding',
+      'Accept-Language',
+    ],
+  };
+
+  app.post(
+    '/webhook/stripe',
+    express.raw({ type: 'application/json' }),
+    handleStripeWebhook
+  );
+
+  // app.use(cors(corsOptions));
   app.use(helmet());
   app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
   app.use(morgan('common'));
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  const swaggerSpec = swaggerJsDoc(swaggerOptions);
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use(`${config.apiPrefix}/auth`, authRoutes);
+  app.use(`${config.apiPrefix}/organization`, organizationRoutes);
 
   app.use(ErrorHandler);
 

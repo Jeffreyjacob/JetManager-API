@@ -1,6 +1,4 @@
 {
-  "watch": ["src"],
-  "ext": "ts",
-  "ignore": [],
-  "exec": "npx ts-node ./src/server.ts"
+  "watch": ["./src", "./src/server.ts", "./src/worker.ts"],
+  "ext": ".ts,.js"
 }

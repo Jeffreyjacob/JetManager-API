@@ -151,6 +151,7 @@ const sendErrorDev = (err: AppError | Error, res: Response): void => {
       name: err.name,
       message: err.message,
       stack: err.stack,
+      data: (err as AppError).data || null,
       ...((err as any).meta && { meta: (err as any).meta }),
       ...((err as any).code && { code: (err as any).code }),
     },
@@ -168,6 +169,7 @@ const sendErrorProd = (err: AppError | Error, res: Response): void => {
       name: err.name,
       message: err.message,
       stack: err.stack,
+      data: (err as AppError).data || null,
       ...((err as any).meta && { meta: (err as any).meta }),
       ...((err as any).code && { code: (err as any).code }),
     });
