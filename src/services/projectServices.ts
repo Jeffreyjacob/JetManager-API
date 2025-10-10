@@ -120,14 +120,14 @@ export class ProjectServices {
       },
     });
 
-    return project;
+    return {
+      data: project,
+    };
   }
 
   async getProjectByOrganizationId({
-    organizationId,
     data,
   }: {
-    organizationId: Organization['id'];
     data: IProjectQuery['getProjectByOrganization'];
   }) {
     const name = data.name && {
@@ -140,7 +140,7 @@ export class ProjectServices {
     const projects = await prisma.project.findMany({
       where: {
         ...name,
-        organizationId,
+        organizationId: data.organizationId,
       },
     });
 

@@ -11,7 +11,12 @@ import {
   OrganizationRestrict,
   OrganizationSubscriptionCheck,
 } from '../middlewares/orgaizationMiddleware';
-import { MembershipRole, Organization, Project } from '../generated/prisma';
+import {
+  MembershipRole,
+  Organization,
+  Project,
+  User,
+} from '../generated/prisma';
 
 export class ProjectController {
   private static projectService = new ProjectServices();
@@ -22,6 +27,7 @@ export class ProjectController {
 
       await OrganizationSubscriptionCheck(validatedBody.organizationId);
       await OrganizationRestrict(
+        req.user.id as User['id'],
         validatedBody.organizationId,
         MembershipRole.OWNER,
         MembershipRole.ADMIN
@@ -45,6 +51,7 @@ export class ProjectController {
 
       await OrganizationSubscriptionCheck(validatedBody.organizationId);
       await OrganizationRestrict(
+        req.user.id as User['id'],
         validatedBody.organizationId,
         MembershipRole.OWNER,
         MembershipRole.ADMIN
@@ -80,20 +87,22 @@ export class ProjectController {
   static getProjectByOrganizationIdController = AsyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const organizationId = req.params.orgId;
-
+      console.log(organizationId, 'organizationId');
       const name = req.query.name as string;
 
       const query = {
         ...(name && { name }),
+        organizationId,
       };
 
       const validatedBody = await getProjectbyOrganizationValidator(query);
 
       const result =
         await ProjectController.projectService.getProjectByOrganizationId({
-          organizationId: organizationId as Organization['id'],
           data: validatedBody,
         });
+
+      console.log(result);
 
       return res.status(200).json({
         success: true,

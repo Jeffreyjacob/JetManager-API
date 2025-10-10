@@ -397,8 +397,8 @@ export const swaggerDefinition = {
             example: true,
           },
           data: {
-            type: 'array',
-            example: "[{id:'organizationId',name:'organizationName'}]",
+            type: 'object',
+            example: "{id:'organizationId',name:'organizationName'}",
           },
         },
       },
@@ -424,6 +424,109 @@ export const swaggerDefinition = {
           totalPages: {
             type: 'integer',
             example: 3,
+          },
+        },
+      },
+      CreateProjectRequest: {
+        type: 'object',
+        required: ['name', 'description', 'organizationId'],
+        properties: {
+          name: {
+            type: 'string',
+            example: 'Project Name',
+          },
+          description: {
+            type: 'string',
+            example: 'Project Description',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'Organization Id',
+          },
+        },
+      },
+      CreateProjectResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Project has been created successfully!',
+          },
+        },
+      },
+      UpdateProjectRequest: {
+        type: 'object',
+        required: ['organizationId'],
+        properties: {
+          name: {
+            type: 'string',
+            example: 'Project Name',
+          },
+          description: {
+            type: 'string',
+            example: 'Project description',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'Organization Id',
+          },
+        },
+      },
+      UpdateProjectResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'object',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Your Project has been updated successfully!',
+          },
+        },
+      },
+      GetProjectByOrganizationResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'array',
+            example:
+              "[{id:'projectid',name:'project name',description:'project description'}]",
+          },
+        },
+      },
+      GetProjectById: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'object',
+            example:
+              "{id:'projectId',name:'project name',description:'project description'}",
+          },
+        },
+      },
+      DeleteProjectResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Your project has been deleted!',
           },
         },
       },

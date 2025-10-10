@@ -94,5 +94,6 @@ export interface IProjectMutation {
 export interface IProjectQuery {
   getProjectByOrganization: {
     name?: string;
+    organizationId: Organization['id'];
   };
 }

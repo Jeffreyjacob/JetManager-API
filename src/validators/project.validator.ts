@@ -32,6 +32,7 @@ export const getProjectbyOrganizationValidator = async (
   const validators: ObjectSchema<IProjectQuery['getProjectByOrganization']> =
     Joi.object({
       name: Joi.string().optional(),
+      organizationId: Joi.string().required(),
     });
 
   return validators.validateAsync(reqBody, { abortEarly: false });
