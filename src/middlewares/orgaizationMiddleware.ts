@@ -95,6 +95,7 @@ export const OrganizationRestrict = async (
   ...roles: MembershipRole[]
 ) => {
   try {
+    console.log(userId, organizationId);
     const member = await prisma.membership.findFirst({
       where: {
         organizationId: organizationId,
@@ -102,14 +103,14 @@ export const OrganizationRestrict = async (
       },
     });
 
+    console.log(member, 'member');
+
     if (!member) {
       throw new AppError(
         'Unable to find membership for this organization. Please check if you are still a member.',
         404
       );
     }
-
-    console.log(member.role);
 
     if (!roles.includes(member.role)) {
       throw new AppError(

@@ -14,6 +14,8 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './config/swaggerConfig';
 import { handleStripeWebhook } from './webhooks/webhook';
 import organizationRoutes from './routes/organizationRoute';
+import projectRoute from './routes/projectRoute';
+import taskRoute from './routes/taskRoute';
 
 dotenv.config();
 
@@ -61,6 +63,8 @@ async function startServer() {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.use(`${config.apiPrefix}/auth`, authRoutes);
   app.use(`${config.apiPrefix}/organization`, organizationRoutes);
+  app.use(`${config.apiPrefix}/project`, projectRoute);
+  app.use(`${config.apiPrefix}/task`, taskRoute);
 
   app.use(ErrorHandler);
 

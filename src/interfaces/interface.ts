@@ -5,6 +5,8 @@ import {
   User,
   Membership,
   MembershipRole,
+  TaskStatus,
+  Project,
 } from '../generated/prisma';
 
 export interface IUserMutation {
@@ -73,6 +75,59 @@ export interface IOrganizationQuery {
   };
   getOrganizationMember: {
     name?: string;
+    page?: number;
+    limit?: number;
+  };
+}
+
+export interface IProjectMutation {
+  create: {
+    name: string;
+    description: string;
+    organizationId: Organization['id'];
+  };
+  update: {
+    name?: string;
+    description?: string;
+    organizationId: Organization['id'];
+  };
+}
+
+export interface IProjectQuery {
+  getProjectByOrganization: {
+    name?: string;
+    organizationId: Organization['id'];
+  };
+}
+
+export interface ITaskMutation {
+  create: {
+    title: string;
+    description?: string;
+    status: TaskStatus;
+    projectId: Project['id'];
+    assignedTo?: User['id'];
+    dueDate?: string;
+    duration: number;
+    organizationId: Organization['id'];
+  };
+  update: {
+    title?: string;
+    description?: string;
+    assignedTo?: User['id'];
+    dueDate?: string;
+    duration?: number;
+    organizationId: Organization['id'];
+  };
+  updateStatus: {
+    status: TaskStatus;
+    organizationId: Organization['id'];
+  };
+}
+
+export interface ITaskQuery {
+  getTasks: {
+    status?: TaskStatus;
     page?: number;
     limit?: number;
   };

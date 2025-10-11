@@ -168,7 +168,7 @@ organizationRoutes
  * @openapi
  * /api/v1/organization:
  *   get:
- *     summary: Get all user organizations (Both Owner or Worker)
+ *     summary: Get all organizations (Both Owner or Worker)
  *     description: Retrieve members of a specific organization, with optional filters such as member name, page, and limit.
  *     tags: [Organization]
  *     security:

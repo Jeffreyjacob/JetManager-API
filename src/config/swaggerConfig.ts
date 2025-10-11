@@ -2,6 +2,7 @@ import {
   SubscriptionDuration,
   Plans,
   MembershipRole,
+  TaskStatus,
 } from '../generated/prisma';
 
 export const swaggerDefinition = {
@@ -397,8 +398,8 @@ export const swaggerDefinition = {
             example: true,
           },
           data: {
-            type: 'array',
-            example: "[{id:'organizationId',name:'organizationName'}]",
+            type: 'object',
+            example: "{id:'organizationId',name:'organizationName'}",
           },
         },
       },
@@ -424,6 +425,289 @@ export const swaggerDefinition = {
           totalPages: {
             type: 'integer',
             example: 3,
+          },
+        },
+      },
+      CreateProjectRequest: {
+        type: 'object',
+        required: ['name', 'description', 'organizationId'],
+        properties: {
+          name: {
+            type: 'string',
+            example: 'Project Name',
+          },
+          description: {
+            type: 'string',
+            example: 'Project Description',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'Organization Id',
+          },
+        },
+      },
+      CreateProjectResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Project has been created successfully!',
+          },
+        },
+      },
+      UpdateProjectRequest: {
+        type: 'object',
+        required: ['organizationId'],
+        properties: {
+          name: {
+            type: 'string',
+            example: 'Project Name',
+          },
+          description: {
+            type: 'string',
+            example: 'Project description',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'Organization Id',
+          },
+        },
+      },
+      UpdateProjectResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'object',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Your Project has been updated successfully!',
+          },
+        },
+      },
+      GetProjectByOrganizationResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'array',
+            example:
+              "[{id:'projectid',name:'project name',description:'project description'}]",
+          },
+        },
+      },
+      GetProjectById: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'object',
+            example:
+              "{id:'projectId',name:'project name',description:'project description'}",
+          },
+        },
+      },
+      DeleteProjectResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Your project has been deleted!',
+          },
+        },
+      },
+      CreateTaskRequest: {
+        type: 'object',
+        required: ['title', 'projectId', 'organizationId', 'duration'],
+        properties: {
+          title: {
+            type: 'string',
+            example: 'Task title',
+          },
+          description: {
+            type: 'string',
+            example: 'Task description',
+          },
+          status: {
+            type: 'string',
+            enum: Object.values(TaskStatus),
+            example: `TO_DO PROGRESS DONE`,
+          },
+          projectId: {
+            type: 'string',
+            example: 'project id',
+          },
+          assignedTo: {
+            type: 'string',
+            example: 'Assigned User',
+          },
+          dueDate: {
+            type: 'string',
+            example: 'due Date',
+          },
+          duration: {
+            type: 'integer',
+            example: 4,
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationid',
+          },
+        },
+      },
+      CreateTaskResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Task created successfully',
+          },
+        },
+      },
+      UpdateTaskRequest: {
+        type: 'object',
+        required: ['organizationId'],
+        properties: {
+          title: {
+            type: 'string',
+            example: 'Task title',
+          },
+          description: {
+            type: 'string',
+            example: 'Task description',
+          },
+          projectId: {
+            type: 'string',
+            example: 'project id',
+          },
+          assignedTo: {
+            type: 'string',
+            example: 'Assigned User',
+          },
+          dueDate: {
+            type: 'string',
+            example: 'due Date',
+          },
+          duration: {
+            type: 'integer',
+            example: 4,
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationid',
+          },
+        },
+      },
+      UpdateTaskResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Task updated successfully',
+          },
+        },
+      },
+      UpdateTaskStatusRequest: {
+        type: 'object',
+        required: ['status', 'organizationId'],
+        properties: {
+          status: {
+            type: 'string',
+            enum: Object.values(TaskStatus),
+            example: `TO_DO PROGRESS DONE`,
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationid',
+          },
+        },
+      },
+      UpdateTaskStatusResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Task status updated successfully',
+          },
+        },
+      },
+      GetTaskByProductResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'array',
+            example:
+              "[{id:'task id',title:'task title',description:'task description'}]",
+          },
+          currentPage: {
+            type: 'integer',
+            exmaple: 1,
+          },
+          totalPages: {
+            type: 'integer',
+            example: 10,
+          },
+          totalCount: {
+            type: 'integer',
+            example: 20,
+          },
+        },
+      },
+      GetTaskByIdResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'object',
+            example:
+              "{id:'taskId',name:'taskName',description:'task description'}",
+          },
+        },
+      },
+      DeleteTaskResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'task has been deleted',
           },
         },
       },
