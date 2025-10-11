@@ -560,6 +560,10 @@ export const swaggerDefinition = {
             type: 'string',
             example: 'due Date',
           },
+          duration: {
+            type: 'integer',
+            example: 4,
+          },
           organizationId: {
             type: 'string',
             example: 'organizationid',
@@ -602,6 +606,10 @@ export const swaggerDefinition = {
           dueDate: {
             type: 'string',
             example: 'due Date',
+          },
+          duration: {
+            type: 'integer',
+            example: 4,
           },
           organizationId: {
             type: 'string',
@@ -647,6 +655,59 @@ export const swaggerDefinition = {
           message: {
             type: 'string',
             example: 'Task status updated successfully',
+          },
+        },
+      },
+      GetTaskByProductResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'array',
+            example:
+              "[{id:'task id',title:'task title',description:'task description'}]",
+          },
+          currentPage: {
+            type: 'integer',
+            exmaple: 1,
+          },
+          totalPages: {
+            type: 'integer',
+            example: 10,
+          },
+          totalCount: {
+            type: 'integer',
+            example: 20,
+          },
+        },
+      },
+      GetTaskByIdResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'object',
+            example:
+              "{id:'taskId',name:'taskName',description:'task description'}",
+          },
+        },
+      },
+      DeleteTaskResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'task has been deleted',
           },
         },
       },

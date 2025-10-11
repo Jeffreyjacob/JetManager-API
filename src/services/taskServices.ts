@@ -423,4 +423,40 @@ export class TaskServices {
       totalCount,
     };
   }
+
+  async getTaskById({ taskId }: { taskId: Task['id'] }) {
+    const task = await prisma.task.findUnique({
+      where: {
+        id: taskId,
+      },
+      include: {
+        comments: true,
+        attachments: true,
+      },
+    });
+
+    if (!task) {
+      throw new AppError('Unable to find task with id', 404);
+    }
+
+    return {
+      data: task,
+    };
+  }
+
+  async deleteTask({ taskId }: { taskId: Task['id'] }) {
+    const deletedTask = await prisma.task.delete({
+      where: {
+        id: taskId,
+      },
+    });
+
+    if (!deletedTask) {
+      throw new AppError('Unable to delete task', 404);
+    }
+
+    return {
+      message: 'Task has been deleted!',
+    };
+  }
 }

@@ -123,4 +123,34 @@ export class TaskController {
       });
     }
   );
+
+  static getTaskByIdController = AsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const taskId = req.params.taskId;
+
+      const result = await TaskController.taskService.getTaskById({
+        taskId: taskId as Task['id'],
+      });
+
+      return res.status(200).json({
+        success: true,
+        ...result,
+      });
+    }
+  );
+
+  static deleteTask = AsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const taskId = req.params.taskId;
+
+      const result = await TaskController.taskService.deleteTask({
+        taskId: taskId as Task['id'],
+      });
+
+      return res.status(200).json({
+        success: true,
+        ...result,
+      });
+    }
+  );
 }
