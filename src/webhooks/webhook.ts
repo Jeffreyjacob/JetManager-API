@@ -150,7 +150,7 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event) {
 
     try {
       const emailQueue = getEmailQueue();
-      emailQueue.add('email', {
+      await emailQueue.add('email', {
         to: user.email,
         subject: 'Subscription Updated',
         body: html,
