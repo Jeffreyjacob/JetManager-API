@@ -156,7 +156,7 @@ model Task {
   id          String       @id @default(uuid())
   title       String
   description String?
-  status      TaskStatus
+  status      TaskStatus @default(IN_PROGRESS)
   projectId   String
   project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade) 
   assignedTo  String?

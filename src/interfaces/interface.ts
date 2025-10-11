@@ -107,7 +107,7 @@ export interface ITaskMutation {
     status: TaskStatus;
     projectId: Project['id'];
     assignedTo?: User['id'];
-    dueDate?: Date;
+    dueDate?: string;
     duration: number;
     organizationId: Organization['id'];
   };
@@ -115,12 +115,20 @@ export interface ITaskMutation {
     title?: string;
     description?: string;
     assignedTo?: User['id'];
-    dueDate?: Date;
+    dueDate?: string;
     duration?: number;
     organizationId: Organization['id'];
   };
   updateStatus: {
     status: TaskStatus;
     organizationId: Organization['id'];
+  };
+}
+
+export interface ITaskQuery {
+  getTasks: {
+    status?: TaskStatus;
+    page?: number;
+    limit?: number;
   };
 }

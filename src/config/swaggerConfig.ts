@@ -2,6 +2,7 @@ import {
   SubscriptionDuration,
   Plans,
   MembershipRole,
+  TaskStatus,
 } from '../generated/prisma';
 
 export const swaggerDefinition = {
@@ -527,6 +528,125 @@ export const swaggerDefinition = {
           message: {
             type: 'string',
             example: 'Your project has been deleted!',
+          },
+        },
+      },
+      CreateTaskRequest: {
+        type: 'object',
+        required: ['title', 'projectId', 'organizationId', 'duration'],
+        properties: {
+          title: {
+            type: 'string',
+            example: 'Task title',
+          },
+          description: {
+            type: 'string',
+            example: 'Task description',
+          },
+          status: {
+            type: 'string',
+            enum: Object.values(TaskStatus),
+            example: `TO_DO PROGRESS DONE`,
+          },
+          projectId: {
+            type: 'string',
+            example: 'project id',
+          },
+          assignedTo: {
+            type: 'string',
+            example: 'Assigned User',
+          },
+          dueDate: {
+            type: 'string',
+            example: 'due Date',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationid',
+          },
+        },
+      },
+      CreateTaskResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Task created successfully',
+          },
+        },
+      },
+      UpdateTaskRequest: {
+        type: 'object',
+        required: ['organizationId'],
+        properties: {
+          title: {
+            type: 'string',
+            example: 'Task title',
+          },
+          description: {
+            type: 'string',
+            example: 'Task description',
+          },
+          projectId: {
+            type: 'string',
+            example: 'project id',
+          },
+          assignedTo: {
+            type: 'string',
+            example: 'Assigned User',
+          },
+          dueDate: {
+            type: 'string',
+            example: 'due Date',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationid',
+          },
+        },
+      },
+      UpdateTaskResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Task updated successfully',
+          },
+        },
+      },
+      UpdateTaskStatusRequest: {
+        type: 'object',
+        required: ['status', 'organizationId'],
+        properties: {
+          status: {
+            type: 'string',
+            enum: Object.values(TaskStatus),
+            example: `TO_DO PROGRESS DONE`,
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationid',
+          },
+        },
+      },
+      UpdateTaskStatusResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Task status updated successfully',
           },
         },
       },

@@ -1,6 +1,12 @@
 import { prisma } from '../config/prismaConfig';
-import { Task } from '../generated/prisma';
-import { ITaskMutation } from '../interfaces/interface';
+import {
+  MembershipRole,
+  Project,
+  Task,
+  TaskStatus,
+  User,
+} from '../generated/prisma';
+import { ITaskMutation, ITaskQuery } from '../interfaces/interface';
 import { getEmailQueue } from '../jobs/queue/emailQueue';
 import { AppError } from '../utils/appError';
 import { taskDueReminderTemplate } from '../utils/emailTemplate/taskReminderEmail';
@@ -300,12 +306,50 @@ export class TaskServices {
   }
 
   async updateTaskStatus({
+    userId,
     taskId,
     data,
   }: {
+    userId: User['id'];
     taskId: Task['id'];
     data: ITaskMutation['updateStatus'];
   }) {
+    const existingTask = await prisma.task.findUnique({
+      where: {
+        id: taskId,
+      },
+    });
+
+    if (!existingTask) {
+      throw new AppError('Unable to find task', 404);
+    }
+
+    const checkIfUserIsMemeber = await prisma.membership.findUnique({
+      where: {
+        userId_organizationId: {
+          userId,
+          organizationId: data.organizationId,
+        },
+      },
+    });
+
+    if (!checkIfUserIsMemeber) {
+      throw new AppError(
+        "You don't belong to organization which this task was created,You can update the status",
+        400
+      );
+    }
+
+    if (
+      checkIfUserIsMemeber.role === MembershipRole.WORKER &&
+      checkIfUserIsMemeber.userId !== existingTask.assignedTo
+    ) {
+      throw new AppError(
+        "This task was not assigned to you, you can't update the status",
+        400
+      );
+    }
+
     const updateTask = await prisma.task.update({
       where: {
         id: taskId,
@@ -314,5 +358,69 @@ export class TaskServices {
         status: data.status,
       },
     });
+
+    if (data.status === TaskStatus.DONE) {
+      if (updateTask.dueDateReminderId) {
+        const emailQueue = getEmailQueue();
+        const reminderJob = await emailQueue.getJob(
+          updateTask.dueDateReminderId
+        );
+
+        if (reminderJob) {
+          await reminderJob.remove();
+        }
+
+        await prisma.task.update({
+          where: {
+            id: taskId,
+          },
+          data: {
+            dueDateReminderId: null,
+          },
+        });
+      }
+    }
+
+    return {
+      message: 'Task status updated!',
+    };
+  }
+
+  async getTaskByProject({
+    projectId,
+    data,
+  }: {
+    projectId: Project['id'];
+    data: ITaskQuery['getTasks'];
+  }) {
+    const status = data.status && {
+      status: data.status,
+    };
+
+    const page = data.page || 1;
+    const take = data.limit || 10;
+    const skip = (page - 1) * take;
+
+    const where = {
+      ...status,
+      projectId,
+    };
+
+    const totalCount = await prisma.task.count({ where });
+    const totalPages = Math.ceil(totalCount / take);
+
+    const tasks = await prisma.task.findMany({
+      where,
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      data: tasks,
+      currentPage: page,
+      totalPages,
+      totalCount,
+    };
   }
 }
