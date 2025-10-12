@@ -9,7 +9,7 @@ import crypto from 'crypto';
 import { AppError } from './appError';
 
 const config = getConfig();
-const isDev = config.env;
+const isDev = config.env !== 'production';
 
 const s3 = new S3Client({
   region: config.aws.s3.region,
