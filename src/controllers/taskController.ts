@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { TaskServices } from '../services/taskServices';
 import { AsyncHandler } from '../utils/asyncHandler';
 import {
+  addAttachmentValidators,
   createTaskValidators,
   getTaskByProjectIdValidators,
   updateStatusValidators,
@@ -18,6 +19,9 @@ import {
   TaskStatus,
   User,
 } from '../generated/prisma';
+import { ITaskMutation } from '../interfaces/interface';
+import { uploadFileToS3 } from '../utils/uploadS3';
+import { AppError } from '../utils/appError';
 
 export class TaskController {
   private static taskService = new TaskServices();
@@ -145,6 +149,38 @@ export class TaskController {
 
       const result = await TaskController.taskService.deleteTask({
         taskId: taskId as Task['id'],
+      });
+
+      return res.status(200).json({
+        success: true,
+        ...result,
+      });
+    }
+  );
+
+  static addAttachment = AsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (!req.file) {
+        throw new AppError('no File provided', 400);
+      }
+      const fileUrl = await uploadFileToS3(req.file as Express.Multer.File);
+
+      const body = {
+        fileUrl,
+        ...req.body,
+      } as ITaskMutation['addAttachment'];
+
+      const validatedBody = await addAttachmentValidators(body);
+      await OrganizationRestrict(
+        req.user.id,
+        validatedBody.organizationId,
+        MembershipRole.ADMIN,
+        MembershipRole.OWNER
+      );
+
+      const result = await TaskController.taskService.addAttachment({
+        data: validatedBody,
+        userid: req.user.id,
       });
 
       return res.status(200).json({

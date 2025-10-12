@@ -59,6 +59,14 @@ export interface AppConfig {
     stripe_secret_key: string;
     stripe_webhook_secret: string;
   };
+  aws: {
+    s3: {
+      bucket_name: string;
+      access_key: string;
+      access_secret_key: string;
+      region: string;
+    };
+  };
 }
 
 export const getConfig = (): AppConfig => ({
@@ -124,5 +132,13 @@ export const getConfig = (): AppConfig => ({
   stripe: {
     stripe_secret_key: process.env.STRIPE_SECRET_KEY!,
     stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET!,
+  },
+  aws: {
+    s3: {
+      access_key: process.env.AWS_ACCESS_KEY!,
+      access_secret_key: process.env.AWS_SECRET_ACCESS_KEY!,
+      bucket_name: process.env.AWS_BUCKET_NAME!,
+      region: process.env.AWS_REGION!,
+    },
   },
 });

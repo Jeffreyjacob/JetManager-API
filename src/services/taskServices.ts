@@ -1,5 +1,6 @@
 import { prisma } from '../config/prismaConfig';
 import {
+  Attachment,
   MembershipRole,
   Project,
   Task,
@@ -10,6 +11,7 @@ import { ITaskMutation, ITaskQuery } from '../interfaces/interface';
 import { getEmailQueue } from '../jobs/queue/emailQueue';
 import { AppError } from '../utils/appError';
 import { taskDueReminderTemplate } from '../utils/emailTemplate/taskReminderEmail';
+import { deleteFileFromS3, extractKeyFromFileUrl } from '../utils/uploadS3';
 
 export class TaskServices {
   async createTask({ data }: { data: ITaskMutation['create'] }) {
@@ -457,6 +459,61 @@ export class TaskServices {
 
     return {
       message: 'Task has been deleted!',
+    };
+  }
+
+  async addAttachment({
+    data,
+    userid,
+  }: {
+    data: ITaskMutation['addAttachment'];
+    userid: User['id'];
+  }) {
+    const { organizationId, ...otherData } = data;
+    const attachment = await prisma.attachment.create({
+      data: {
+        ...otherData,
+        uploadedBy: userid,
+      },
+    });
+
+    return {
+      message: 'attachment has been added to task',
+    };
+  }
+
+  async removeAttachment({
+    data,
+    attachmentId,
+  }: {
+    data: ITaskMutation['removeAttachment'];
+    attachmentId: Attachment['id'];
+  }) {
+    const attachment = await prisma.attachment.findUnique({
+      where: {
+        id: attachmentId,
+      },
+    });
+
+    if (!attachment) {
+      throw new AppError('Unable to find attachment', 404);
+    }
+
+    const key = await extractKeyFromFileUrl(attachment.fileUrl);
+    await deleteFileFromS3(key);
+
+    const deletedAttachment = await prisma.attachment.delete({
+      where: {
+        id: attachmentId,
+      },
+    });
+
+    if (!deletedAttachment) {
+      throw new AppError('Unable to delete attachment', 400);
+    }
+
+    return {
+      message: 'attachment has been deleted!',
     };
   }
 }

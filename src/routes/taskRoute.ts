@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { Protect } from '../middlewares/authMiddleware';
 import { TaskController } from '../controllers/taskController';
+import { MulterUploadFile } from '../middlewares/multer';
 
 const taskRoute = Router();
 
@@ -33,6 +34,12 @@ const taskRoute = Router();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 taskRoute.route('/create').post(Protect, TaskController.createTaskController);
+
+taskRoute
+  .route('/attachment/add')
+  .post(Protect, MulterUploadFile.single('file'), TaskController.addAttachment);
+
+taskRoute.route('/attachment/remove/:attachmentId').delete(Protect);
 
 /**
  * @openapi

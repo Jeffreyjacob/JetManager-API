@@ -8,6 +8,7 @@ import {
   TaskStatus,
   Project,
   Task,
+  Attachment,
 } from '../generated/prisma';
 
 export interface IUserMutation {
@@ -122,6 +123,14 @@ export interface ITaskMutation {
   };
   updateStatus: {
     status: TaskStatus;
+    organizationId: Organization['id'];
+  };
+  addAttachment: {
+    fileUrl: string;
+    taskId: Task['id'];
+    organizationId: Organization['id'];
+  };
+  removeAttachment: {
     organizationId: Organization['id'];
   };
 }

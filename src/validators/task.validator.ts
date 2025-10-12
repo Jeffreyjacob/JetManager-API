@@ -62,3 +62,26 @@ export const getTaskByProjectIdValidators = async (
 
   return validators.validateAsync(reqBody, { abortEarly: false });
 };
+
+export const addAttachmentValidators = async (
+  reqBody: ITaskMutation['addAttachment']
+): Promise<ITaskMutation['addAttachment']> => {
+  const validators: ObjectSchema<ITaskMutation['addAttachment']> = Joi.object({
+    fileUrl: Joi.string().required(),
+    taskId: Joi.string().required(),
+    organizationId: Joi.string().required(),
+  });
+
+  return validators.validateAsync(reqBody, { abortEarly: false });
+};
+
+export const removeAttachmentValidators = async (
+  reqBody: ITaskMutation['removeAttachment']
+): Promise<ITaskMutation['removeAttachment']> => {
+  const validators: ObjectSchema<ITaskMutation['removeAttachment']> =
+    Joi.object({
+      organizationId: Joi.string().required(),
+    });
+
+  return validators.validateAsync(reqBody, { abortEarly: false });
+};
