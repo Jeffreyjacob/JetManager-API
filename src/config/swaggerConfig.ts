@@ -711,6 +711,69 @@ export const swaggerDefinition = {
           },
         },
       },
+      CreateCommentRequest: {
+        type: 'object',
+        required: ['content', 'taskId', 'userId'],
+        properties: {
+          content: {
+            type: 'string',
+            example: 'Your Comment',
+          },
+          taskId: {
+            type: 'string',
+            example: 'Task id',
+          },
+        },
+      },
+      CreateCommentResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Comment has been created!',
+          },
+        },
+      },
+      UpdateCommentRequest: {
+        type: 'object',
+        required: ['content'],
+        properties: {
+          content: {
+            type: 'string',
+            example: 'Your Comment',
+          },
+        },
+      },
+      UpdateCommentResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Comment has been updated!',
+          },
+        },
+      },
+      DeleteCommentResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'Comment has been deleted!',
+          },
+        },
+      },
       ErrorResponse: {
         type: 'object',
         properties: {

@@ -7,6 +7,7 @@ import {
   MembershipRole,
   TaskStatus,
   Project,
+  Task,
 } from '../generated/prisma';
 
 export interface IUserMutation {
@@ -130,5 +131,15 @@ export interface ITaskQuery {
     status?: TaskStatus;
     page?: number;
     limit?: number;
+  };
+}
+
+export interface ICommentMutation {
+  create: {
+    content: string;
+    taskId: Task['id'];
+  };
+  update: {
+    content: string;
   };
 }
