@@ -152,3 +152,29 @@ export interface ICommentMutation {
     content: string;
   };
 }
+
+export interface ISubscriptionMutation {
+  cancelSubscription: {
+    organizationId: Organization['id'];
+    cancellationReason?: string;
+  };
+  resumeSubscription: {
+    organizationId: Organization['id'];
+  };
+  restartSubscription: {
+    organizationId: Organization['id'];
+    subscriptionType: Plans;
+    subscriptionDuration: SubscriptionDuration;
+  };
+  changeSubscriptionPlan: {
+    organizationId: Organization['id'];
+    when: SubscriptionSwitchEnum;
+    subscriptionType: Plans;
+    subscriptionDuration: SubscriptionDuration;
+  };
+}
+
+export enum SubscriptionSwitchEnum {
+  Now = 'Now',
+  EndOfCurrentPlan = 'EndOfCurrentPlan',
+}

@@ -69,6 +69,11 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event) {
       duration: subscriptionModel.subscriptionDuration,
     });
 
+    const defaultPaymentMethod =
+      typeof subscription.default_payment_method === 'string'
+        ? subscription.default_payment_method
+        : subscription.default_payment_method?.id;
+
     await prisma.$transaction(async (tx) => {
       const updatedSub = await tx.subscription.update({
         where: {
@@ -85,6 +90,7 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event) {
             subscription.items.data[0].current_period_end * 1000
           ),
           subscriptionCycleId,
+          paymentMethodId: defaultPaymentMethod,
         },
       });
 

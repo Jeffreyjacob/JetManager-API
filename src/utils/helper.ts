@@ -4,6 +4,7 @@ import { getEmailQueue } from '../jobs/queue/emailQueue';
 import { SubscriptionReminderEmail } from './emailTemplate/subscriptionReminder';
 import { stripe } from './stripe';
 import { STRIPE_PRICE_IDS } from './stripePriceId';
+import crypto from 'crypto';
 
 export const generateOtp = () => {
   return Math.floor(10000 + Math.random() * 90000);
@@ -159,4 +160,13 @@ export async function cancelSubscriptionReminders({
   }
 
   return cancelledCount;
+}
+
+export function generateIdempotencyKey(
+  action: string,
+  data: Record<string, any>
+): string {
+  const serialized = JSON.stringify(data, Object.keys(data).sort());
+  const hash = crypto.createHash('sha256').update(serialized).digest('hex');
+  return `${action}_${hash}`;
 }
