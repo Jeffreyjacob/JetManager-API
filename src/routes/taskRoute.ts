@@ -35,11 +35,76 @@ const taskRoute = Router();
  */
 taskRoute.route('/create').post(Protect, TaskController.createTaskController);
 
+/**
+ * @openapi
+ * /api/v1/task/attachment/add:
+ *   post:
+ *     summary: Upload an attachment to a task
+ *     tags: [Task]
+ *     security:
+ *       - AccessToken: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: '#/components/schemas/AddAttachmentRequest'
+ *     responses:
+ *       200:
+ *         description: File uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AddAttachmentResponse'
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 taskRoute
   .route('/attachment/add')
   .post(Protect, MulterUploadFile.single('file'), TaskController.addAttachment);
 
-taskRoute.route('/attachment/remove/:attachmentId').delete(Protect);
+/**
+ * @openapi
+ * /api/v1/task/attachment/remove/{attachmentId}:
+ *   delete:
+ *     summary: removing attachment from task
+ *     tags: [Task]
+ *     security:
+ *       - AccessToken: []
+ *     parameters:
+ *       - in: path
+ *         name: attachmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Id of attachment, you are trying to remove
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RemoveAttachmentRequest'
+ *     responses:
+ *       200:
+ *         description: Your attachment has been removed successfully!
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/RemoveAttachmentResponse'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+taskRoute
+  .route('/attachment/remove/:attachmentId')
+  .delete(Protect, TaskController.deleteAttachmentController);
 
 /**
  * @openapi

@@ -5,6 +5,7 @@ import {
   addAttachmentValidators,
   createTaskValidators,
   getTaskByProjectIdValidators,
+  removeAttachmentValidators,
   updateStatusValidators,
   updateTaskValidators,
 } from '../validators/task.validator';
@@ -13,6 +14,7 @@ import {
   OrganizationSubscriptionCheck,
 } from '../middlewares/orgaizationMiddleware';
 import {
+  Attachment,
   MembershipRole,
   Project,
   Task,
@@ -181,6 +183,30 @@ export class TaskController {
       const result = await TaskController.taskService.addAttachment({
         data: validatedBody,
         userid: req.user.id,
+      });
+
+      return res.status(200).json({
+        success: true,
+        ...result,
+      });
+    }
+  );
+
+  static deleteAttachmentController = AsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const attachmentId = req.params.attachmentId;
+
+      const validatedBody = await removeAttachmentValidators(req.body);
+      await OrganizationRestrict(
+        req.user.id,
+        validatedBody.organizationId,
+        MembershipRole.OWNER,
+        MembershipRole.ADMIN
+      );
+
+      const result = await TaskController.taskService.removeAttachment({
+        data: validatedBody,
+        attachmentId: attachmentId as Attachment['id'],
       });
 
       return res.status(200).json({

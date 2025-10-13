@@ -774,6 +774,61 @@ export const swaggerDefinition = {
           },
         },
       },
+      AddAttachmentRequest: {
+        type: 'object',
+        required: ['taskId', 'organizationId', 'file'],
+        properties: {
+          taskId: {
+            type: 'string',
+            example: 'Task id',
+          },
+          organizationId: {
+            type: 'string',
+            example: 'organizationId',
+          },
+          file: {
+            type: 'string',
+            format: 'binary',
+            description: 'File Upload',
+          },
+        },
+      },
+      AddAttachmentResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'attachment has been added!',
+          },
+        },
+      },
+      RemoveAttachmentRequest: {
+        type: 'object',
+        required: ['organizationId'],
+        properties: {
+          organizationId: {
+            type: 'string',
+            example: 'OrganizationId',
+          },
+        },
+      },
+      RemoveAttachmentResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'attachment has been removed!',
+          },
+        },
+      },
       ErrorResponse: {
         type: 'object',
         properties: {
