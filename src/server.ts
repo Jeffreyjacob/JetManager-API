@@ -17,6 +17,7 @@ import organizationRoutes from './routes/organizationRoute';
 import projectRoute from './routes/projectRoute';
 import taskRoute from './routes/taskRoute';
 import commentRoute from './routes/commentRoutes';
+import subscriptionRoute from './routes/subscriptionRoutes';
 
 dotenv.config();
 
@@ -67,6 +68,7 @@ async function startServer() {
   app.use(`${config.apiPrefix}/project`, projectRoute);
   app.use(`${config.apiPrefix}/task`, taskRoute);
   app.use(`${config.apiPrefix}/comment`, commentRoute);
+  app.use(`${config.apiPrefix}/subscription`, subscriptionRoute);
 
   app.use(ErrorHandler);
 
