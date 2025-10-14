@@ -4,6 +4,7 @@ import {
   MembershipRole,
   TaskStatus,
 } from '../generated/prisma';
+import { SubscriptionSwitchEnum } from '../interfaces/interface';
 
 export const swaggerDefinition = {
   openapi: '3.0.0',
@@ -826,6 +827,148 @@ export const swaggerDefinition = {
           message: {
             type: 'string',
             example: 'attachment has been removed!',
+          },
+        },
+      },
+      CancelSubscriptionRequest: {
+        type: 'object',
+        required: ['organizationId'],
+        properties: {
+          organizationId: {
+            type: 'string',
+            example: 'organizationId',
+          },
+          cancellationReason: {
+            type: 'string',
+            example: 'cancel reason',
+          },
+        },
+      },
+      CancelSubscriptionResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'subscription has been cancelled!',
+          },
+        },
+      },
+      ResumeSubscriptionRequest: {
+        type: 'object',
+        required: ['organizationId'],
+        properties: {
+          organizationId: {
+            type: 'string',
+            example: 'OrganizationId',
+          },
+        },
+      },
+      ResumeSubscriptionResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'subscription has been resumed!',
+          },
+        },
+      },
+      RestartSubscriptionRequest: {
+        type: 'object',
+        required: [
+          'organizationId',
+          'subscriptionType',
+          'subscriptionDuration',
+        ],
+        properties: {
+          organizationId: {
+            type: 'string',
+            example: 'organizationId',
+          },
+          subscriptionType: {
+            type: 'string',
+            enum: Object.values(Plans),
+            example: `${[...Object.values(Plans)].join(',')}`,
+          },
+          subscriptionDuration: {
+            type: 'string',
+            enum: Object.values(SubscriptionDuration),
+            example: `${[...Object.values(SubscriptionDuration)].join(',')}`,
+          },
+        },
+      },
+      RestartSubscriptionResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'subscription has been initiated and being processed!',
+          },
+        },
+      },
+      ChangeSubscriptionPlanRequest: {
+        type: 'object',
+        required: [
+          'organizationId',
+          'subscriptionType',
+          'subscriptionDuration',
+          'when',
+        ],
+        properties: {
+          organizationId: {
+            type: 'string',
+            example: 'organizationId',
+          },
+          subscriptionType: {
+            type: 'string',
+            enum: Object.values(Plans),
+            example: `${[...Object.values(Plans)].join(',')}`,
+          },
+          subscriptionDuration: {
+            type: 'string',
+            enum: Object.values(SubscriptionDuration),
+            example: `${[...Object.values(SubscriptionDuration)].join(',')}`,
+          },
+          when: {
+            type: 'string',
+            enum: Object.values(SubscriptionSwitchEnum),
+            example: `${[...Object.values(SubscriptionSwitchEnum)].join(',')}`,
+          },
+        },
+      },
+      ChangeSubscriptionPlanResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          message: {
+            type: 'string',
+            example: 'subscription plan has been changed!',
+          },
+        },
+      },
+      GetOrganizationBySubscriptionResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'array',
           },
         },
       },
