@@ -787,10 +787,8 @@ async function handleSubscriptionUpdate(stripeSub: Stripe.Subscription) {
 
   try {
     await prisma.$transaction(async (tx) => {
-      const updateSubscription = await tx.subscription.update({
-        where: {
-          id: subscription.id,
-        },
+      await tx.subscription.update({
+        where: { id: subscription.id },
         data: {
           status: mapStripeStatusToInternal(stripeSub.status),
           subscriptionType: newSubscription.subscriptionType,
@@ -804,9 +802,7 @@ async function handleSubscriptionUpdate(stripeSub: Stripe.Subscription) {
       });
 
       await tx.subscriptionFeatures.update({
-        where: {
-          subscriptionId: subscription.id,
-        },
+        where: { subscriptionId: subscription.id },
         data: {
           maxProjects: planInfo.maxProjects,
           maxTasks: planInfo.maxTasks,
@@ -814,14 +810,12 @@ async function handleSubscriptionUpdate(stripeSub: Stripe.Subscription) {
         },
       });
 
-      newJobId.map(async (job) => {
-        await tx.reminderJob.create({
-          data: {
-            subscriptionId: subscription.id,
-            jobId: job.jobId,
-            type: job.type,
-          },
-        });
+      await tx.reminderJob.createMany({
+        data: newJobId.map((job) => ({
+          subscriptionId: subscription.id,
+          jobId: job.jobId,
+          type: job.type,
+        })),
       });
 
       console.log(`Successfully processed subscription update: ${stripeSubId}`);
@@ -844,7 +838,7 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
   try {
     const sig = req.headers['stripe-signature'] as string;
     const endpointSecret = config.stripe.stripe_webhook_secret as string;
-
+    console.log(endpointSecret);
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (error: any) {
     console.log(`Payment webhook signature verification failed`, error);

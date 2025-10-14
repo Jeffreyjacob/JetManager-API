@@ -164,4 +164,37 @@ subscriptionRoute
   .route('/changePlan')
   .post(Protect, SubscriptionController.changeSubscriptionController);
 
+/**
+ * @openapi
+ * /api/v1/subscription/{organizationId}:
+ *   get:
+ *     summary: Get subscription by organization
+ *     tags: [Subscription]
+ *     security:
+ *       - AccessToken: []
+ *     parameters:
+ *       - in: path
+ *         name: organizationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the organization
+ *     responses:
+ *       200:
+ *         description: organizational subscription retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GetOrganizationBySubscriptionResponse'
+ *       404:
+ *         description: Project not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+subscriptionRoute
+  .route('/:organizationId')
+  .get(Protect, SubscriptionController.getSubscriptionByOrganization);
+
 export default subscriptionRoute;

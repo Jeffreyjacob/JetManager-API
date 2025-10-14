@@ -1,6 +1,11 @@
 import Stripe from 'stripe';
 import { prisma } from '../config/prismaConfig';
-import { Plans, SubscriptionStatus, User } from '../generated/prisma';
+import {
+  Organization,
+  Plans,
+  SubscriptionStatus,
+  User,
+} from '../generated/prisma';
 import {
   ISubscriptionMutation,
   SubscriptionSwitchEnum,
@@ -300,6 +305,36 @@ export class SubscriptionServices {
         data.when === SubscriptionSwitchEnum.Now
           ? 'Plan changed immediately with proration.'
           : 'Plan will change at the end of your current plan period',
+    };
+  }
+
+  async getSubsctiptoonByOrganization({
+    organizationId,
+  }: {
+    organizationId: Organization['id'];
+  }) {
+    const organization = await prisma.organization.findUnique({
+      where: {
+        id: organizationId,
+      },
+    });
+
+    if (!organization) {
+      throw new AppError('Unable to find organization', 404);
+    }
+
+    const subscription = await prisma.subscription.findFirst({
+      where: {
+        organizationId: organizationId,
+      },
+    });
+
+    if (!subscription) {
+      throw new AppError('Unable to find subscription', 404);
+    }
+
+    return {
+      data: subscription,
     };
   }
 }

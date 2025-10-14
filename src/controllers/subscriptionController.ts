@@ -104,4 +104,22 @@ export class SubscriptionController {
       });
     }
   );
+
+  static getSubscriptionByOrganization = AsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const organizationId = req.params.organizationId;
+
+      const result =
+        await SubscriptionController.subscriptionServices.getSubsctiptoonByOrganization(
+          {
+            organizationId,
+          }
+        );
+
+      return res.status(200).json({
+        success: true,
+        ...result,
+      });
+    }
+  );
 }

@@ -960,6 +960,18 @@ export const swaggerDefinition = {
           },
         },
       },
+      GetOrganizationBySubscriptionResponse: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'array',
+          },
+        },
+      },
       ErrorResponse: {
         type: 'object',
         properties: {
