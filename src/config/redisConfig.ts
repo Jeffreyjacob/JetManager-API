@@ -12,3 +12,19 @@ const redisConfig = {
   maxLoadingTimeout: 1000,
   lazyConnect: true,
 };
+
+export const redisConnection = new Redis(redisConfig);
+
+redisConnection.on('connect', () => {
+  console.log('Connected to Redis');
+});
+
+redisConnection.on('error', (err) => {
+  console.log('Redis connection error');
+});
+
+redisConnection.on('reconnecting', () => {
+  console.log('Reconnecting to redis...');
+});
+
+export default redisConfig;
