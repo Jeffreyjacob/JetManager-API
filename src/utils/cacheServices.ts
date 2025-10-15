@@ -30,7 +30,7 @@ interface CacheConfig {
   batchSize?: number;
 }
 
-class CacheService {
+export class CacheService {
   private redis: Redis;
   private keyPrefix: string;
 
