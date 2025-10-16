@@ -1,0 +1,8 @@
+{
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json": "docker-compose*.yml",
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml",
+    "https://json.schemastore.org/kubernetes.json": "k8s/*.yaml",
+    "https://www.schemastore.org/github-workflow.json": "file:///Users/m1/Desktop/JetManagerApi/JetManager-API/github/workflows/build-and-push.yml"
+  }
+}

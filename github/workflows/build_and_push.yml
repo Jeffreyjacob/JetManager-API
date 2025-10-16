@@ -1,8 +1,0 @@
-name: Build & push backend image
-
-on: 
-  push:
-    branches:
-      - staging
-
-    
