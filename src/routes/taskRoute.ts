@@ -2,8 +2,11 @@ import { Router } from 'express';
 import { Protect } from '../middlewares/authMiddleware';
 import { TaskController } from '../controllers/taskController';
 import { MulterUploadFile } from '../middlewares/multer';
+import CacheMiddleware, { CacheService } from '../utils/cacheServices';
 
 const taskRoute = Router();
+
+const cacheMiddleware = new CacheMiddleware(new CacheService());
 
 /**
  * @openapi
@@ -33,7 +36,13 @@ const taskRoute = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-taskRoute.route('/create').post(Protect, TaskController.createTaskController);
+taskRoute
+  .route('/create')
+  .post(
+    Protect,
+    cacheMiddleware.invalidate('auto:/task'),
+    TaskController.createTaskController
+  );
 
 /**
  * @openapi
@@ -65,7 +74,12 @@ taskRoute.route('/create').post(Protect, TaskController.createTaskController);
  */
 taskRoute
   .route('/attachment/add')
-  .post(Protect, MulterUploadFile.single('file'), TaskController.addAttachment);
+  .post(
+    Protect,
+    cacheMiddleware.invalidate('auto:/task'),
+    MulterUploadFile.single('file'),
+    TaskController.addAttachment
+  );
 
 /**
  * @openapi
@@ -143,7 +157,11 @@ taskRoute
  */
 taskRoute
   .route('/update/:taskId')
-  .put(Protect, TaskController.updateTaskController);
+  .put(
+    Protect,
+    cacheMiddleware.invalidate('auto:/task'),
+    TaskController.updateTaskController
+  );
 
 /**
  * @openapi
@@ -182,7 +200,11 @@ taskRoute
  */
 taskRoute
   .route('/update/status/:taskId')
-  .put(Protect, TaskController.updateTaskStatusController);
+  .put(
+    Protect,
+    cacheMiddleware.invalidate('auto:/task'),
+    TaskController.updateTaskStatusController
+  );
 
 /**
  * @openapi
@@ -213,7 +235,13 @@ taskRoute
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-taskRoute.route('/:taskId').get(Protect, TaskController.getTaskByIdController);
+taskRoute
+  .route('/:taskId')
+  .get(
+    Protect,
+    cacheMiddleware.invalidate('auto:/task'),
+    TaskController.getTaskByIdController
+  );
 
 /**
  * @openapi
@@ -244,7 +272,13 @@ taskRoute.route('/:taskId').get(Protect, TaskController.getTaskByIdController);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-taskRoute.route('/:taskId').delete(Protect, TaskController.deleteTask);
+taskRoute
+  .route('/:taskId')
+  .delete(
+    Protect,
+    cacheMiddleware.invalidate('auto:/task'),
+    TaskController.deleteTask
+  );
 
 /**
  * @openapi
@@ -295,6 +329,10 @@ taskRoute.route('/:taskId').delete(Protect, TaskController.deleteTask);
  */
 taskRoute
   .route('/project/:projectId')
-  .get(Protect, TaskController.getTaskByProjectIdController);
+  .get(
+    Protect,
+    cacheMiddleware.response(300),
+    TaskController.getTaskByProjectIdController
+  );
 
 export default taskRoute;
