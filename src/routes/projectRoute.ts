@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { Protect } from '../middlewares/authMiddleware';
 import { ProjectController } from '../controllers/projectController';
+import CacheMiddleware, { CacheService } from '../utils/cacheServices';
 
 const projectRoute = Router();
+
+const cacheMiddleware = new CacheMiddleware(new CacheService());
 
 /**
  * @openapi
@@ -34,7 +37,11 @@ const projectRoute = Router();
  */
 projectRoute
   .route('/create')
-  .post(Protect, ProjectController.CreateProjectController);
+  .post(
+    Protect,
+    cacheMiddleware.invalidate('auto:/project'),
+    ProjectController.CreateProjectController
+  );
 
 /**
  * @openapi
@@ -74,7 +81,11 @@ projectRoute
  */
 projectRoute
   .route('/:orgId')
-  .get(Protect, ProjectController.getProjectByOrganizationIdController);
+  .get(
+    Protect,
+    cacheMiddleware.response(300),
+    ProjectController.getProjectByOrganizationIdController
+  );
 
 /**
  * @openapi
@@ -113,7 +124,11 @@ projectRoute
  */
 projectRoute
   .route('/update/:projectId')
-  .put(Protect, ProjectController.updateProjectController);
+  .put(
+    Protect,
+    cacheMiddleware.invalidate('auto:/project'),
+    ProjectController.updateProjectController
+  );
 
 /**
  * @openapi
@@ -146,7 +161,11 @@ projectRoute
  */
 projectRoute
   .route('/:projectId')
-  .get(Protect, ProjectController.getProjectByIdController);
+  .get(
+    Protect,
+    cacheMiddleware.response(300),
+    ProjectController.getProjectByIdController
+  );
 
 /**
  * @openapi

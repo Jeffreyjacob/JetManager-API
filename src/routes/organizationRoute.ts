@@ -1,8 +1,11 @@
 import { Request, Response, Router } from 'express';
 import { Protect } from '../middlewares/authMiddleware';
 import { OrganizationController } from '../controllers/organizationController';
+import CacheMiddleware, { CacheService } from '../utils/cacheServices';
 
 const organizationRoutes = Router();
+
+const cacheMiddleware = new CacheMiddleware(new CacheService());
 
 /**
  * @openapi
@@ -34,7 +37,11 @@ const organizationRoutes = Router();
  */
 organizationRoutes
   .route('/create')
-  .post(Protect, OrganizationController.createOrganizationController);
+  .post(
+    Protect,
+    cacheMiddleware.invalidate('auto:/organization/create*'),
+    OrganizationController.createOrganizationController
+  );
 
 /**
  * @openapi
@@ -130,7 +137,11 @@ organizationRoutes
  */
 organizationRoutes
   .route('/member/remove')
-  .delete(Protect, OrganizationController.removeMemberFromOrganization);
+  .delete(
+    Protect,
+    cacheMiddleware.invalidate('auto:/member'),
+    OrganizationController.removeMemberFromOrganization
+  );
 
 /**
  * @openapi
@@ -162,7 +173,11 @@ organizationRoutes
  */
 organizationRoutes
   .route('/member/role/update')
-  .put(Protect, OrganizationController.updateMemberOrganizationRole);
+  .put(
+    Protect,
+    cacheMiddleware.invalidate('auto:/member/role'),
+    OrganizationController.updateMemberOrganizationRole
+  );
 
 /**
  * @openapi
@@ -210,7 +225,11 @@ organizationRoutes
  */
 organizationRoutes
   .route('/')
-  .get(Protect, OrganizationController.getAllUserOrganization);
+  .get(
+    Protect,
+    cacheMiddleware.response(300),
+    OrganizationController.getAllUserOrganization
+  );
 
 /**
  * @openapi
@@ -243,7 +262,11 @@ organizationRoutes
  */
 organizationRoutes
   .route('/:orgId')
-  .get(Protect, OrganizationController.getOrganizationById);
+  .get(
+    Protect,
+    cacheMiddleware.response(300),
+    OrganizationController.getOrganizationById
+  );
 
 /**
  * @openapi
@@ -297,7 +320,11 @@ organizationRoutes
  */
 organizationRoutes
   .route('/:orgId/member')
-  .get(Protect, OrganizationController.getOrganizationMember);
+  .get(
+    Protect,
+    cacheMiddleware.response(300),
+    OrganizationController.getOrganizationMember
+  );
 
 organizationRoutes
   .route('/:id/billing/success')
