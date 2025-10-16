@@ -37,7 +37,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-               ghcr.io/${{ secrets.DOCKER_GIT_OWNER }}/jetmanagerApi:main
+               ghcr.io/${{ secrets.DOCKER_GIT_OWNER }}/jetmanager_api:main
           cache-from: type=gha
           cache-to: type=gha,mode=max
     
