@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v4
         with: 
           context: .
-          file: ./dockerfile
+          file: ./Dockerfile
           push: true
           tags: |
                ghcr.io/${{ secrets.DOCKER_GIT_OWNER }}/mateam-backend:develop
