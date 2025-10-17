@@ -106,10 +106,6 @@ jobs:
             docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma generate
             docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma migrate deploy
 
-
-            echo "🧹 Cleaning up unused Docker images, containers, and volumes..."          
-            docker system prune -af
-            docker volume prune -f
             rm -f docker-compose.override.yml || true
 
             # Start backend and worker
