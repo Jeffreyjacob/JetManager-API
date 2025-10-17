@@ -97,21 +97,21 @@ jobs:
 
             echo ".env created ✅"
             cat .env | grep NODE_ENV
-
+           
+            # Login to GHCR
             echo ${{ secrets.GIT_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            
-            # ✅ Insert Prisma commands here
+
+            # Generate Prisma client and deploy migrations
             docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma generate
             docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma migrate deploy
 
-            echo "🧹 Cleaning up unused Docker images, containers, and volumes..."          
+            # Cleanup old containers/images
+            echo "🧹 Cleaning up Docker..."
             docker system prune -af
             docker volume prune -f
-
-            # ensure dev override doesn't interfere
             rm -f docker-compose.override.yml || true
 
-
+            # Start backend and worker
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d
