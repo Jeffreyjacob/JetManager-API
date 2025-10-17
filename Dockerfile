@@ -1,31 +1,25 @@
-# =========================
-# Stage 1: Dependencies (prod + dev)
-# =========================
+# Stage 1: Install dependencies
 FROM node:20-slim AS deps
 WORKDIR /app
-
-# Copy package files
 COPY package.json package-lock.json* ./
+RUN npm ci --omit-dev
 
-# Install prod dependencies (will copy dev deps in builder)
-RUN npm ci --omit=dev
-
-# =========================
-# Stage 2: Builder (compile TypeScript)
-# =========================
+# Stage 2: Build and generate Prisma client
 FROM node:20-slim AS builder
 WORKDIR /app
 
-# Install system deps for building
+# Install build tools + OpenSSL for Prisma
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 build-essential \
+    python3 \
+    build-essential \
+    openssl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files and install all dependencies (including dev for TS build)
+ENV NODE_ENV=development
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-# Copy all source code
+# Copy source code + prisma folder
 COPY . .
 
 # Generate Prisma client
@@ -34,28 +28,22 @@ RUN npx prisma generate
 # Build TypeScript
 RUN npm run build
 
-# =========================
-# Stage 3: Runner (production image)
-# =========================
+# Stage 3: Production runner
 FROM node:20-slim AS runner
 
 WORKDIR /app
+
 ENV NODE_ENV=production
 
-# Copy production node_modules from deps stage
+# Copy node_modules + built dist + package.json
 COPY --from=deps /app/node_modules ./node_modules
-
-# Copy compiled JS from builder stage
 COPY --from=builder /app/dist ./dist
-
-# Copy package.json (optional)
 COPY package.json ./
+COPY prisma ./prisma    
 
-# Ensure proper permissions
 RUN chown -R node:node /app
 USER node
 
-# Expose port
 EXPOSE 8000
 
 # Run backend server
