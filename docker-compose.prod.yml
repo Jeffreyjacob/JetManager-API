@@ -9,7 +9,7 @@ services:
         - .env
       expose:
         - "8000"
-      command: ["node", "dist/src/server.js"]
+      command: ["node", "dist/server.js"]
       
 
 
@@ -19,6 +19,6 @@ services:
       restart: always
       env_file:
         - .env
-      command: ["node", "dist/src/worker.js"]
+      command: ["node", "dist/worker.js"]
 
 
