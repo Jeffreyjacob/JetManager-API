@@ -59,4 +59,4 @@ USER node
 EXPOSE 8000
 
 # Run backend server
-CMD ["node", "dist/src/server.js"]
+CMD ["node", "dist/server.js"]
