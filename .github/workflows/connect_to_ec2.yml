@@ -1,0 +1,136 @@
+name: Connect to EC2 instance
+
+on:
+  push: 
+    branches: 
+       - main
+  workflow_dispatch: {}
+
+
+permissions: 
+   contents: read
+   packages: write
+
+
+jobs:
+   deploy:
+     runs-on: ubuntu-latest
+     environment: jetmanager
+    
+     steps:
+       - name: Checkout
+         uses: actions/checkout@v3
+
+       - name: Deploy with SSH
+         uses: appleboy/ssh-action@v1.0.0
+         env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+         with:
+          host: ${{ secrets.EC2_HOST}}
+          username: ${{ secrets.EC2_USER}}
+          key: ${{ secrets.EC2_SECRET_KEY }}
+          script: |
+
+            cd /home/ubuntu
+
+            if ! command -v docker &> /dev/null; then
+              echo "Installing latest Docker..."
+              sudo apt-get remove -y docker docker-engine docker.io containerd runc
+              sudo apt-get update
+              sudo apt-get install -y ca-certificates curl gnupg lsb-release
+              sudo mkdir -p /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              echo \
+                "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+                https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
+                sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              sudo apt-get update
+              sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              sudo usermod -aG docker $USER
+            else
+              echo "Docker is already installed."
+            fi
+
+
+            if ! docker compose version &> /dev/null; then
+              echo "Docker Compose plugin not found. Installing..."
+              sudo apt-get update
+              sudo apt-get install -y docker-compose-plugin
+            else
+              echo "Docker Compose plugin is already installed."
+            fi
+
+            rm -rf JetManager-API
+            git clone https://github.com/Jeffreyjacob/JetManager-API.git
+            cd JetManager-API
+            git pull origin main
+
+            echo "📝 Writing production environment file..."
+            cat <<EOF > .env
+            NODE_ENV=production
+            PORT=${{ secrets.PORT }}
+            API_PREFIX=${{ secrets.API_PREFIX }}
+            ACCESS_TOKEN_KEY=${{ secrets.ACCESS_TOKEN_KEY }}
+            ACCESS_TOKEN_EXPIRESIN=${{ secrets.ACCESS_TOKEN_EXPIRESIN }}
+            REFRESH_TOKEN_KEY=${{ secrets.REFRESH_TOKEN_KEY }}
+            REFRESH_TOKEN_EXPIRESIN=${{ secrets.REFRESH_TOKEN_EXPIRESIN }}
+            EMAIL_SERVICE=${{ secrets.EMAIL_SERVICE }}
+            EMAIL_HOST=${{ secrets.EMAIL_HOST }}
+            EMAIL_MAIL=${{ secrets.EMAIL_MAIL }}
+            EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD}}
+            EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+            RATE_LIMIT_WINDOW_MS=${{ secrets.RATE_LIMIT_WINDOW_MS }}
+            REDIS_HOST=${{secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT}}
+            BULLMQ_REMOVE_ON_COMPLETE=${{ secrets.BULLMQ_REMOVE_ON_COMPLETE }}
+            BULLMQ_REMOVE_ON_FAIL=${{ secrets.BULLMQ_REMOVE_ON_FAIL }}
+            BULLMQ_ATTEMPTS=3
+            BULLMQ_BACKOFF_DELAY=${{ secrets.BULLMQ_BACKOFF_DELAY }}
+            BULLMQ_CONCURRENCY=${{ secrets.BULLMQ_CONCURRENCY }}
+            STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+            STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME}}
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+
+            EOF
+
+            echo ".env created ✅"
+            cat .env | grep NODE_ENV
+
+            echo ${{ secrets.GIT_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            echo "🧹 Cleaning up unused Docker images, containers, and volumes..."          
+            docker system prune -af
+            docker volume prune -f
+
+            # ensure dev override doesn't interfere
+            rm -f docker-compose.override.yml || true
+
+
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml up -d
+
+            echo "Checking container status..."
+            docker compose ps
+
+            echo "Logs for backend:"
+            docker compose logs --tail=20 backend
+
+            echo "Logs for worker:"
+            docker compose logs --tail=20 worker
+
+
+
+
+
+     
+
+
+
+     
