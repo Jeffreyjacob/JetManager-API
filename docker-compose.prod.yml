@@ -14,7 +14,7 @@ services:
 
     worker:
       image: ghcr.io/jeffreyjacob/jetmanager_api:main
-      container_name: jetmanagerApi-backend
+      container_name: jetmanagerApi-worker
       restart: always
       env_file:
         - .env
