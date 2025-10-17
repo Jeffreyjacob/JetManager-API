@@ -99,6 +99,10 @@ jobs:
             cat .env | grep NODE_ENV
 
             echo ${{ secrets.GIT_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # ✅ Insert Prisma commands here
+            docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma generate
+            docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma migrate deploy
 
             echo "🧹 Cleaning up unused Docker images, containers, and volumes..."          
             docker system prune -af
