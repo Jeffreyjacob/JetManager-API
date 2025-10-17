@@ -10,7 +10,7 @@ services:
       expose:
         - "8000"
       command: ["node", "dist/src/server.js"]
-      working_dir: /app
+      
 
 
     worker:
@@ -20,5 +20,5 @@ services:
       env_file:
         - .env
       command: ["node", "dist/src/worker.js"]
-      working_dir: /app
+
 
