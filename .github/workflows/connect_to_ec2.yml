@@ -101,12 +101,12 @@ jobs:
             # Login to GHCR
             echo ${{ secrets.GIT_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Generate Prisma client and deploy migrations
+            # ✅ Insert Prisma commands here
             docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma generate
             docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma migrate deploy
 
-            # Cleanup old containers/images
-            echo "🧹 Cleaning up Docker..."
+
+            echo "🧹 Cleaning up unused Docker images, containers, and volumes..."          
             docker system prune -af
             docker volume prune -f
             rm -f docker-compose.override.yml || true
@@ -114,16 +114,9 @@ jobs:
             # Start backend and worker
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up
 
-            echo "Checking container status..."
-            docker compose ps
-
-            echo "Logs for backend:"
-            docker compose logs --tail=20 backend
-
-            echo "Logs for worker:"
-            docker compose logs --tail=20 worker
+           
 
 
 

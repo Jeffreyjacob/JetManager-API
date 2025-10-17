@@ -30,6 +30,7 @@ RUN npm run build
 
 # Stage 3: Production runner
 FROM node:20-slim AS runner
+
 WORKDIR /app
 
 ENV NODE_ENV=production
