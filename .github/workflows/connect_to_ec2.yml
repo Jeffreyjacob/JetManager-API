@@ -23,13 +23,9 @@ jobs:
 
        - name: Deploy with SSH
          uses: appleboy/ssh-action@v1.0.0
-         env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
          with:
-          host: ${{ secrets.EC2_HOST}}
-          username: ${{ secrets.EC2_USER}}
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
           key: ${{ secrets.EC2_SECRET_KEY }}
           script: |
 
@@ -69,7 +65,7 @@ jobs:
             cd JetManager-API
             git pull origin main
 
-            echo "📝 Writing production environment file..."
+            echo "📝 Writing production environments file..."
             cat <<EOF > .env
             NODE_ENV=production
             PORT=${{ secrets.PORT }}
