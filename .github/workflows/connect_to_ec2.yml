@@ -65,7 +65,7 @@ jobs:
             cd JetManager-API
             git pull origin main
 
-            echo "📝 Writing production environment file..."
+            echo "📝 Writing production environments file..."
             cat <<EOF > .env
             NODE_ENV=production
             PORT=${{ secrets.PORT }}
