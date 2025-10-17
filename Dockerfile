@@ -21,7 +21,12 @@ RUN npm ci
 
 # copy the rest of the source code and run the typescript build
 COPY . .
+
+# ✅ Generate Prisma client before building
+RUN npx prisma generate
+
 RUN npm run build
+
 
 FROM node:20-slim AS runner
 WORKDIR /app
