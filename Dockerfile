@@ -1,48 +1,61 @@
-# Dev stage
+# =========================
+# Stage 1: Dependencies (prod + dev)
+# =========================
 FROM node:20-slim AS deps
 WORKDIR /app
+
+# Copy package files
 COPY package.json package-lock.json* ./
 
-RUN npm ci --omit-dev
+# Install prod dependencies (will copy dev deps in builder)
+RUN npm ci --omit=dev
 
-
-FROM node:20-slim AS builder 
+# =========================
+# Stage 2: Builder (compile TypeScript)
+# =========================
+FROM node:20-slim AS builder
 WORKDIR /app
 
-
+# Install system deps for building
 RUN apt-get update && apt-get install -y --no-install-recommends \
-   python3 \
-   build-essential \
-   && rm -rf /var/lib/apt/lists/*
+    python3 build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV NODE_ENV=development
+# Copy package files and install all dependencies (including dev for TS build)
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-# copy the rest of the source code and run the typescript build
+# Copy all source code
 COPY . .
 
-# ✅ Generate Prisma client before building
+# Generate Prisma client
 RUN npx prisma generate
 
+# Build TypeScript
 RUN npm run build
 
-
+# =========================
+# Stage 3: Runner (production image)
+# =========================
 FROM node:20-slim AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
 
-#Copy production node_modules and build dist from earlier stages
-
+# Copy production node_modules from deps stage
 COPY --from=deps /app/node_modules ./node_modules
+
+# Copy compiled JS from builder stage
 COPY --from=builder /app/dist ./dist
+
+# Copy package.json (optional)
 COPY package.json ./
 
+# Ensure proper permissions
 RUN chown -R node:node /app
-
 USER node
 
+# Expose port
 EXPOSE 8000
 
-CMD [ "node","dist/src/server.js" ]
+# Run backend server
+CMD ["node", "dist/src/server.js"]

@@ -38,8 +38,8 @@ jobs:
           push: true
           tags: |
                ghcr.io/${{ secrets.DOCKER_GIT_OWNER }}/jetmanager_api:main
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-    
-
-    
+               
+      - name: Verify dist folder
+        run: |
+          docker build -t jetmanager_test .
+          docker run --rm jetmanager_test ls -R /app/dist
