@@ -110,9 +110,16 @@ jobs:
 
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up 
+            docker compose -f docker-compose.prod.yml up -d
 
-           
+            echo "Checking container status..."
+            docker compose ps
+
+            echo "Logs for backend:"
+            docker compose logs --tail=20 backend
+
+            echo "Logs for worker:"
+            docker compose logs --tail=20 worker
 
 
 
