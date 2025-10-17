@@ -104,6 +104,10 @@ jobs:
             docker system prune -af
             docker volume prune -f
 
+            echo "🧹 Cleaning up unused Docker images, containers, and volumes..."          
+            docker system prune -af
+            docker volume prune -f
+
             # ensure dev override doesn't interfere
             rm -f docker-compose.override.yml || true
 
