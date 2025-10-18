@@ -5,12 +5,15 @@ import { InviteStatus } from '@prisma/client';
 import { getConfig } from '../../config/config';
 
 const config = getConfig();
+const redisUrl = new URL(config.redis.host);
 const bullmqConnection = {
   host: config.redis.host,
   port: config.redis.port,
   password: config.redis.password,
+  tls: redisUrl.protocol === 'rediss:' ? {} : undefined,
   maxRetriesPerRequest: null,
 };
+
 export const createExpiringInviteWorker = () => {
   const worker = new Worker<ExpiringInviteData>(
     'expiringInvite',
