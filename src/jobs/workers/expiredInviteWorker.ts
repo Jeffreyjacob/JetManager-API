@@ -7,9 +7,9 @@ import { getConfig } from '../../config/config';
 const config = getConfig();
 const redisUrl = new URL(config.redis.host);
 const bullmqConnection = {
-  host: config.redis.host,
-  port: config.redis.port,
-  password: config.redis.password,
+  host: redisUrl.hostname,
+  port: config.redis.port || 6379,
+  password: redisUrl.password || '', // empty string if none
   tls: redisUrl.protocol === 'rediss:' ? {} : undefined,
   maxRetriesPerRequest: null,
 };
