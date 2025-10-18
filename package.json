@@ -9,6 +9,7 @@
     "db:deploy": "npx prisma migrate deploy && npx prisma generate",
     "build": "npx tsc --skipLibCheck",
     "start": "node dist/server.js",
+    "worker": "node dist/worker.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },

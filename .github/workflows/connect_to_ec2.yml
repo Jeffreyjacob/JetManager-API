@@ -100,18 +100,13 @@ jobs:
            
             # Login to GHCR
             echo ${{ secrets.GIT_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            
-             echo "Insert Prisma commands here"          
-            
-            docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma generate
-            docker run --rm --env-file .env ghcr.io/jeffreyjacob/jetmanager_api:main npx prisma migrate deploy
 
             rm -f docker-compose.override.yml || true
 
             # Start backend and worker
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up
+            docker compose -f docker-compose.prod.yml up 
 
            
 
