@@ -35,6 +35,10 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# 👇 Add this line again (runtime also needs openssl)
+RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+ && rm -rf /var/lib/apt/lists/*
+
 # Copy only necessary files
 COPY package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
