@@ -3,16 +3,16 @@ import { ExpiringInviteData } from '../interface/jobinterface';
 import { prisma } from '../../config/prismaConfig';
 import { InviteStatus } from '@prisma/client';
 import { getConfig } from '../../config/config';
+import Redis from 'ioredis';
 
 const config = getConfig();
-const redisUrl = new URL(config.redis.host);
-const bullmqConnection = {
-  host: redisUrl.hostname,
-  port: config.redis.port || 6379,
-  password: redisUrl.password || '', // empty string if none
-  tls: redisUrl.protocol === 'rediss:' ? {} : undefined,
+
+const redisConnection = new Redis(config.redis.host, {
+  tls: config.redis.host.startsWith('rediss://')
+    ? { rejectUnauthorized: false }
+    : undefined,
   maxRetriesPerRequest: null,
-};
+});
 
 export const createExpiringInviteWorker = () => {
   const worker = new Worker<ExpiringInviteData>(
@@ -42,7 +42,7 @@ export const createExpiringInviteWorker = () => {
       }
     },
     {
-      connection: bullmqConnection,
+      connection: redisConnection,
       concurrency: config.bullmq.concurrency,
     }
   );
