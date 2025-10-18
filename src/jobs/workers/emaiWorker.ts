@@ -3,32 +3,26 @@ import { getConfig } from '../../config/config';
 import { EmailJobData } from '../interface/jobinterface';
 import { AppError } from '../../utils/appError';
 import { SendEmail } from '../../utils/nodeMailer';
+import Redis from 'ioredis';
 
 const config = getConfig();
-const redisUrl = new URL(config.redis.host);
-const bullmqConnection = {
-  host: redisUrl.hostname,
-  port: config.redis.port || 6379,
-  password: redisUrl.password || '', // empty string if none
-  tls: redisUrl.protocol === 'rediss:' ? {} : undefined,
+
+const redisConnection = new Redis(config.redis.host, {
+  tls: config.redis.host.startsWith('rediss://')
+    ? { rejectUnauthorized: false }
+    : undefined,
   maxRetriesPerRequest: null,
-};
+});
 
 export const createEmailWorker = () => {
   const worker = new Worker<EmailJobData>(
     'email',
     async (job: Job<EmailJobData>) => {
-      const { to, subject, body, template, data } = job.data;
+      const { to, subject, body } = job.data;
 
       try {
-        await SendEmail({
-          to,
-          subject,
-          html: body,
-          text: body,
-        });
-
-        console.log(`Email sent successfully to to ${to}`);
+        await SendEmail({ to, subject, html: body, text: body });
+        console.log(`Email sent successfully to ${to}`);
         return { success: true, recipient: to };
       } catch (error: any) {
         console.error(`Failed to send email to ${to}:`, error.message);
@@ -36,7 +30,7 @@ export const createEmailWorker = () => {
       }
     },
     {
-      connection: bullmqConnection,
+      connection: redisConnection,
       concurrency: config.bullmq.concurrency,
     }
   );
@@ -44,13 +38,12 @@ export const createEmailWorker = () => {
   worker.on('completed', (job) =>
     console.warn(`Email job ${job.id} completed`)
   );
-
   worker.on('failed', (job, err) =>
     console.error(`Email job ${job?.id} failed:`, err)
   );
-
   worker.on('progress', (job, progress) =>
     console.warn(`Email job ${job.id} progress: ${progress}`)
   );
+
   return worker;
 };
