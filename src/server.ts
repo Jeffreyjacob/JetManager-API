@@ -96,9 +96,9 @@ async function startServer() {
 
   app.use(ErrorHandler);
 
-  const PORT = config.port;
+  const PORT = Number(config.port);
   await prisma.$connect();
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on Port ${PORT}`);
   });
 
