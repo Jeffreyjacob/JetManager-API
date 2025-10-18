@@ -3,7 +3,7 @@ import {
   Plans,
   MembershipRole,
   TaskStatus,
-} from '../generated/prisma';
+} from '@prisma/client';
 import { SubscriptionSwitchEnum } from '../interfaces/interface';
 
 export const swaggerDefinition = {

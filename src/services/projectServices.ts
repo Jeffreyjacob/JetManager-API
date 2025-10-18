@@ -1,5 +1,5 @@
 import { prisma } from '../config/prismaConfig';
-import { Organization, Prisma, Project } from '../generated/prisma';
+import { Organization, Prisma, Project } from '@prisma/client';
 import { IProjectMutation, IProjectQuery } from '../interfaces/interface';
 import { AppError } from '../utils/appError';
 

@@ -7,7 +7,7 @@ import {
   restartSubscriptionValidators,
   resumeSubscriptionValidators,
 } from '../validators/subscription.validators';
-import { MembershipRole } from '../generated/prisma';
+import { MembershipRole } from '@prisma/client';
 import { OrganizationRestrict } from '../middlewares/orgaizationMiddleware';
 
 export class SubscriptionController {

@@ -3,7 +3,7 @@ import { getConfig } from '../config/config';
 import { Request, Response } from 'express';
 import { stripe } from '../utils/stripe';
 import { prisma } from '../config/prismaConfig';
-import { BillingStatus, SubscriptionStatus } from '../generated/prisma';
+import { BillingStatus, SubscriptionStatus } from '@prisma/client';
 import {
   cancelSubscriptionReminders,
   generateSubscriptionCycleId,

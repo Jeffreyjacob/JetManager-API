@@ -1,5 +1,5 @@
 import { prisma } from '../config/prismaConfig';
-import { Comment, MembershipRole, User } from '../generated/prisma';
+import { Comment, MembershipRole, User } from '@prisma/client';
 import { ICommentMutation } from '../interfaces/interface';
 import { AppError } from '../utils/appError';
 

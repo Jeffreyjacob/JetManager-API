@@ -3,7 +3,7 @@ import {
   ISubscriptionMutation,
   SubscriptionSwitchEnum,
 } from '../interfaces/interface';
-import { Plans, SubscriptionDuration } from '../generated/prisma';
+import { Plans, SubscriptionDuration } from '@prisma/client';
 
 export const cancelSubscriptionValidators = async (
   reqBody: ISubscriptionMutation['cancelSubscription']

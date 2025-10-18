@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { getConfig } from '../config/config';
 import {
-  PrismaClientInitializationError,
   PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+  PrismaClientInitializationError,
   PrismaClientRustPanicError,
   PrismaClientUnknownRequestError,
-  PrismaClientValidationError,
-} from '../generated/prisma/runtime/library';
+} from '@prisma/client/runtime/library';
 import { AppError } from '../utils/appError';
 import { ValidationError } from 'joi';
 

@@ -39,7 +39,4 @@ jobs:
           tags: |
                ghcr.io/${{ secrets.DOCKER_GIT_OWNER }}/jetmanager_api:main
                
-      - name: Verify dist folder
-        run: |
-          docker build -t jetmanager_test .
-          docker run --rm jetmanager_test ls -R /app/dist
+      

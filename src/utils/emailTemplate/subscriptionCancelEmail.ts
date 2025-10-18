@@ -1,4 +1,4 @@
-import { Plans } from '../../generated/prisma';
+import { Plans } from '@prisma/client';
 
 export const subscriptionCancelEmail = ({
   customerName,

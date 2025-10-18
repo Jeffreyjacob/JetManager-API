@@ -101,12 +101,44 @@ jobs:
             # Login to GHCR
             echo ${{ secrets.GIT_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+
+            echo "🧹 Cleaning up unused Docker images, containers, and volumes..."          
+            docker system prune -af
+            docker volume prune -f
             rm -f docker-compose.override.yml || true
 
             # Start backend and worker
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d 
+            docker compose -f docker-compose.prod.yml up -d
+
+            echo "🩺 Checking container health and status..."
+            sleep 10  # give them time to boot
+            docker compose ps
+
+            echo "📜 Backend logs (last 20 lines):"
+            docker compose logs --tail=20 backend || echo "⚠️ Backend logs unavailable"
+
+            echo "📜 Worker logs (last 20 lines):"
+            docker compose logs --tail=20 worker || echo "⚠️ Worker logs unavailable"
+
+            echo "✅ Verifying containers are running..."
+            BACKEND_STATUS=$(docker inspect -f '{{.State.Status}}' jetmanagerApi-backend || echo "not_found")
+            WORKER_STATUS=$(docker inspect -f '{{.State.Status}}' jetmanagerApi-worker || echo "not_found")
+
+            echo "Backend status: $BACKEND_STATUS"
+            echo "Worker status: $WORKER_STATUS"
+
+            if [ "$BACKEND_STATUS" != "running" ] || [ "$WORKER_STATUS" != "running" ]; then
+              echo "❌ One or more containers failed to start properly."
+              echo "🔍 Full logs for backend:"
+              docker compose logs backend
+              echo "🔍 Full logs for worker:"
+              docker compose logs worker
+              exit 1
+            fi
+
+            echo "🎉 Deployment successful! Backend and worker are both running."
 
            
 

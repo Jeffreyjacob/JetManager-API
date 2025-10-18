@@ -1,7 +1,7 @@
 import { Job, Worker } from 'bullmq';
 import { ExpiringInviteData } from '../interface/jobinterface';
 import { prisma } from '../../config/prismaConfig';
-import { InviteStatus } from '../../generated/prisma';
+import { InviteStatus } from '@prisma/client';
 import { getConfig } from '../../config/config';
 
 const config = getConfig();

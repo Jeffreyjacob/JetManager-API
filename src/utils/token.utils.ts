@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { getConfig } from '../config/config';
 import { Response } from 'express';
-import { User } from '../generated/prisma';
+import { User } from '@prisma/client';
 
 interface TokenPayload {
   id: string;

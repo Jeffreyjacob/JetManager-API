@@ -11,12 +11,7 @@ import {
   OrganizationRestrict,
   OrganizationSubscriptionCheck,
 } from '../middlewares/orgaizationMiddleware';
-import {
-  MembershipRole,
-  Organization,
-  Project,
-  User,
-} from '../generated/prisma';
+import { MembershipRole, Organization, Project, User } from '@prisma/client';
 
 export class ProjectController {
   private static projectService = new ProjectServices();

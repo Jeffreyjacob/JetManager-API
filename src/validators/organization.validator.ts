@@ -3,11 +3,7 @@ import {
   IOrganizationMutation,
   IOrganizationQuery,
 } from '../interfaces/interface';
-import {
-  SubscriptionDuration,
-  Plans,
-  MembershipRole,
-} from '../generated/prisma';
+import { SubscriptionDuration, Plans, MembershipRole } from '@prisma/client';
 
 export const createOrganizationValidator = async (
   reqBody: IOrganizationMutation['create']

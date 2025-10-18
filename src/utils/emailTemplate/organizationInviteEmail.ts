@@ -1,4 +1,4 @@
-import { MembershipRole } from '../../generated/prisma';
+import { MembershipRole } from '@prisma/client';
 
 export const OrganizationInviteEmail = ({
   inviteUrl,

@@ -1,6 +1,6 @@
 import Joi, { ObjectSchema } from 'joi';
 import { IProjectMutation, IProjectQuery } from '../interfaces/interface';
-import { Project } from '../generated/prisma';
+import { Project } from '@prisma/client';
 
 export const createProjectValidators = async (
   reqBody: IProjectMutation['create']

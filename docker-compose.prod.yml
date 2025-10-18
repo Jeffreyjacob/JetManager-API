@@ -1,6 +1,15 @@
 
 
 services:
+    migrate:
+      image: ghcr.io/jeffreyjacob/jetmanager_api:main
+      container_name: jetmanagerApi-migrate
+      env_file:
+      - .env
+      command: ["npx", "prisma", "migrate", "deploy"]
+      restart: "no"
+
+
     backend:
       image: ghcr.io/jeffreyjacob/jetmanager_api:main
       container_name: jetmanagerApi-backend
@@ -9,7 +18,9 @@ services:
         - .env
       expose:
         - "8000"
-      command: ["sh", "-c", "npm run db:deploy && npm start"]
+      depends_on:
+        - migrate
+      command: ["node", "dist/server.js"]
       
 
 
@@ -19,6 +30,8 @@ services:
       restart: always
       env_file:
         - .env
-      command: ["sh", "-c", "npm run db:deploy && npm worker"]
+      depends_on:
+        - migrate
+      command: ["node", "dist/worker.js"]
 
 

@@ -7,7 +7,7 @@ import {
   Organization,
   MembershipRole,
   User,
-} from '../generated/prisma';
+} from '@prisma/client';
 import { STRIPE_PRICE_IDS } from '../utils/stripePriceId';
 import { getConfig } from '../config/config';
 import { stripe } from '../utils/stripe';
