@@ -13,10 +13,15 @@ export const swaggerDefinition = {
     version: '1.0.0',
     description: 'API documentation for JetManager API',
   },
+
   servers: [
     {
-      url: 'http://localhost:8000',
-      description: 'Local server',
+      url:
+        process.env.NODE_ENV === 'production'
+          ? 'http://ec2-18-214-18-120.compute-1.amazonaws.com:8000'
+          : 'http://localhost:8000',
+      description:
+        process.env.NODE_ENV === 'production' ? 'Production' : 'Local',
     },
   ],
   components: {
@@ -985,5 +990,5 @@ export const swaggerDefinition = {
 
 export const swaggerOptions = {
   swaggerDefinition,
-  apis: ['./src/routes/*.ts', "'./src/routes/*.js'"],
+  apis: ['./src/routes/*.ts', './src/routes/*.js', './dist/routes/*.js'],
 };
