@@ -1,11 +1,6 @@
 import Stripe from 'stripe';
 import { prisma } from '../config/prismaConfig';
-import {
-  Organization,
-  Plans,
-  SubscriptionStatus,
-  User,
-} from '../generated/prisma';
+import { Organization, Plans, SubscriptionStatus, User } from '@prisma/client';
 import {
   ISubscriptionMutation,
   SubscriptionSwitchEnum,

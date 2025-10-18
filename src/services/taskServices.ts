@@ -6,7 +6,7 @@ import {
   Task,
   TaskStatus,
   User,
-} from '../generated/prisma';
+} from '@prisma/client';
 import { ITaskMutation, ITaskQuery } from '../interfaces/interface';
 import { getEmailQueue } from '../jobs/queue/emailQueue';
 import { AppError } from '../utils/appError';

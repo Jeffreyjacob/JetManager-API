@@ -15,7 +15,7 @@ import { SaveRefreshToken } from '../middlewares/authMiddleware';
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import { ForgetPasswordHTML } from '../utils/emailTemplate/forgetPasswordEmail';
-import { User } from '../generated/prisma';
+import { User } from '@prisma/client';
 
 const config = getConfig();
 

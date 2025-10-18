@@ -1,4 +1,4 @@
-import { SubscriptionStatus } from '../generated/prisma';
+import { SubscriptionStatus } from '@prisma/client';
 
 export const STRIPE_PRICE_IDS = {
   BASE: {

@@ -9,7 +9,7 @@ import {
   Project,
   Task,
   Attachment,
-} from '../generated/prisma';
+} from '@prisma/client';
 
 export interface IUserMutation {
   register: {

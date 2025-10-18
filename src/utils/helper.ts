@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { Plans, SubscriptionDuration } from '../generated/prisma';
+import { Plans, SubscriptionDuration } from '@prisma/client';
 import { getEmailQueue } from '../jobs/queue/emailQueue';
 import { SubscriptionReminderEmail } from './emailTemplate/subscriptionReminder';
 import { stripe } from './stripe';

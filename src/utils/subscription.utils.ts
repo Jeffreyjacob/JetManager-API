@@ -1,4 +1,4 @@
-import { SubscriptionDuration, Plans } from '../generated/prisma';
+import { SubscriptionDuration, Plans } from '@prisma/client';
 
 interface PlanFeatures {
   maxWorkers: number;

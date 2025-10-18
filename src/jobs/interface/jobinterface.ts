@@ -1,4 +1,4 @@
-import { OrganizationInvite } from '../../generated/prisma';
+import { OrganizationInvite } from '@prisma/client';
 
 export interface EmailJobData {
   to: string | string[];

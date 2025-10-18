@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { User } from '../generated/prisma';
+import { User } from '@prisma/client';
 import { AppError } from '../utils/appError';
 import {
   GenerateToken,

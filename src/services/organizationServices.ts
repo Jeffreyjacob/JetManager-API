@@ -2,12 +2,12 @@ import {
   IOrganizationMutation,
   IOrganizationQuery,
 } from '../interfaces/interface';
-import { InviteStatus, Organization, Prisma, User } from '../generated/prisma';
+import { InviteStatus, Organization, Prisma, User } from '@prisma/client';
 import { prisma } from '../config/prismaConfig';
 import { AppError } from '../utils/appError';
 import { stripe } from '../utils/stripe';
 import { getPlanDetials } from '../utils/subscription.utils';
-import { SubscriptionStatus, MembershipRole } from '../generated/prisma';
+import { SubscriptionStatus, MembershipRole } from '@prisma/client';
 import { STRIPE_PRICE_IDS } from '../utils/stripePriceId';
 import { getConfig } from '../config/config';
 import crypto from 'crypto';

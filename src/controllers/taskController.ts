@@ -20,7 +20,7 @@ import {
   Task,
   TaskStatus,
   User,
-} from '../generated/prisma';
+} from '@prisma/client';
 import { ITaskMutation } from '../interfaces/interface';
 import { uploadFileToS3 } from '../utils/uploadS3';
 import { AppError } from '../utils/appError';

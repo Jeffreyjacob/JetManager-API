@@ -1,6 +1,6 @@
 import Joi, { ObjectSchema } from 'joi';
 import { ITaskMutation, ITaskQuery } from '../interfaces/interface';
-import { TaskStatus } from '../generated/prisma';
+import { TaskStatus } from '@prisma/client';
 
 export const createTaskValidators = async (
   reqBody: ITaskMutation['create']
