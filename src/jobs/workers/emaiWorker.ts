@@ -5,10 +5,12 @@ import { AppError } from '../../utils/appError';
 import { SendEmail } from '../../utils/nodeMailer';
 
 const config = getConfig();
+const redisUrl = new URL(config.redis.host);
 const bullmqConnection = {
   host: config.redis.host,
   port: config.redis.port,
   password: config.redis.password,
+  tls: redisUrl.protocol === 'rediss:' ? {} : undefined,
   maxRetriesPerRequest: null,
 };
 
