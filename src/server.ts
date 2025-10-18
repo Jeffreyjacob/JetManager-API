@@ -76,8 +76,12 @@ async function startServer() {
   );
 
   // app.use(cors(corsOptions));
-  app.use(helmet());
-  app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    })
+  );
   app.use(morgan('common'));
   app.use(limiter);
   app.use(cookieParser());
@@ -86,7 +90,18 @@ async function startServer() {
 
   const swaggerSpec = swaggerJsDoc(swaggerOptions);
 
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+      explorer: true,
+      customSiteTitle: 'JetManager API Docs',
+    })
+  );
+  app.get('/swagger.json', (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+  });
   app.use(`${config.apiPrefix}/auth`, authRoutes);
   app.use(`${config.apiPrefix}/organization`, organizationRoutes);
   app.use(`${config.apiPrefix}/project`, projectRoute);
@@ -96,7 +111,7 @@ async function startServer() {
 
   app.use(ErrorHandler);
 
-  const PORT = Number(config.port);
+  const PORT = Number(config.port) || 8000;
   await prisma.$connect();
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on Port ${PORT}`);
