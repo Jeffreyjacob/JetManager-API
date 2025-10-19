@@ -107,7 +107,7 @@ jobs:
             docker volume prune -f
             rm -f docker-compose.override.yml || true
 
-            # Add Caddyfile generation
+            each "Add Caddyfile generation"
             DOMAIN="18.214.18.120.nip.io"
 
             cat > Caddyfile <<EOF
