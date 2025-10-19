@@ -67,7 +67,7 @@ export const OrganizationSubscriptionCheck = async (
 
       // ❌ Don't send response — instead throw a handled AppError with details
       throw new AppError(
-        'Please add payment method to start your subscription trial',
+        'Please add payment method to start your subscription trial, use the url provided below to add a payment method and start your free trial',
         402,
         { url: session.url }
       );

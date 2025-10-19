@@ -163,6 +163,7 @@ const sendErrorProd = (err: AppError | Error, res: Response): void => {
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
+      data: (err as AppError).data || null,
     });
   } else {
     console.error('💥 Error:', {
@@ -177,6 +178,7 @@ const sendErrorProd = (err: AppError | Error, res: Response): void => {
     res.status(500).json({
       status: 'error',
       message: 'Something went wrong',
+      data: (err as AppError).data || null,
     });
   }
 };
