@@ -96,6 +96,8 @@ export class OrganizationServices {
     const url =
       config.env === 'production' ? config.backendUrl : 'http://localhost:8000';
 
+    console.log(url);
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       customer: stripeCustomer.id,
@@ -110,6 +112,8 @@ export class OrganizationServices {
         userId: user.id,
       },
     });
+
+    console.log(session.url);
 
     return {
       message:
