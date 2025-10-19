@@ -107,6 +107,16 @@ jobs:
             docker volume prune -f
             rm -f docker-compose.override.yml || true
 
+            # Add Caddyfile generation
+            PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+            DOMAIN="${PUBLIC_IP}.nip.io"
+
+            cat > Caddyfile <<EOF
+            $DOMAIN {
+                reverse_proxy backend:8000
+            }
+            EOF
+
             # Start backend and worker
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml down
