@@ -73,7 +73,7 @@ export const getConfig = (): AppConfig => ({
   env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 8000,
   apiPrefix: process.env.API_PREFIX || '/api/v1',
-  backendUrl: process.env.BACKEND_URL!,
+  backendUrl: process.env.BACKEND_URL! || 'https://18.214.18.120.nip.io',
   frontendUrls: {
     baseUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
     verifiyEmail: `${process.env.FRONTEND_URL}/verifyEmail`,

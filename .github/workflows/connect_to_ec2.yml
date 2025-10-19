@@ -74,6 +74,7 @@ jobs:
             ACCESS_TOKEN_EXPIRESIN=${{ secrets.ACCESS_TOKEN_EXPIRESIN }}
             REFRESH_TOKEN_KEY=${{ secrets.REFRESH_TOKEN_KEY }}
             REFRESH_TOKEN_EXPIRESIN=${{ secrets.REFRESH_TOKEN_EXPIRESIN }}
+            BACKEND_URL=${{secrets.BACKEND_URL}}
             EMAIL_SERVICE=${{ secrets.EMAIL_SERVICE }}
             EMAIL_HOST=${{ secrets.EMAIL_HOST }}
             EMAIL_MAIL=${{ secrets.EMAIL_MAIL }}
