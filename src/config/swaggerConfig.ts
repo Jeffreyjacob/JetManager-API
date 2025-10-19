@@ -18,7 +18,7 @@ export const swaggerDefinition = {
     {
       url:
         process.env.NODE_ENV === 'production'
-          ? 'http://ec2-18-214-18-120.compute-1.amazonaws.com:8000'
+          ? 'https://18.214.18.120.nip.io'
           : 'http://localhost:8000',
       description:
         process.env.NODE_ENV === 'production' ? 'Production' : 'Local',
