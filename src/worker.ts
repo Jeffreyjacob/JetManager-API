@@ -9,7 +9,7 @@ const startWorker = async () => {
     const emailWorker = createEmailWorker();
     const expiringInviteWorker = createExpiringInviteWorker();
 
-    console.log('👷 Worker process started and connected to Redis');
+    console.log('👷 Worker process started and connected to Rediss');
 
     emailWorker.on('ready', () => console.log('Email worker connected'));
     expiringInviteWorker.on('ready', () =>
